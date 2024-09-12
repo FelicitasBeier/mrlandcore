@@ -1,4 +1,4 @@
-#' @title calcLPJmL_new
+#' @title calcLPJmL
 #' @description Handle LPJmL data and its time behaviour (smoothing and harmonizing to baseline)
 #'
 #' @param version Switch between LPJmL versions (including addons for further version specification)
@@ -20,12 +20,15 @@
 #' [readLPJmL()]
 #' @examples
 #' \dontrun{
-#' calcOutput("LPJmL_new", subtype = "soilc", aggregate = FALSE)
+#' calcOutput("LPJmL", subtype = "soilc", aggregate = FALSE)
 #' }
 #'
-calcLPJmL_new <- function(version = "LPJmL4_for_MAgPIE_44ac93de", # nolint
-                          climatetype = "MRI-ESM2-0:ssp370",
-                          subtype = "soilc", subdata = NULL, stage = "harmonized2020") {
+
+### This function should be adjusted during the LPJmL - MAgPIE - Hackathon ###
+
+calcLPJmL <- function(version = "LPJmL4_for_MAgPIE_44ac93de", # nolint
+                      climatetype = "MRI-ESM2-0:ssp370",
+                      subtype = "soilc", subdata = NULL, stage = "harmonized2020") {
   # Create settings for LPJmL from version and climatetype argument
   cfg <- toolLPJmLVersion(version = version, climatetype = climatetype)
 
@@ -131,7 +134,7 @@ calcLPJmL_new <- function(version = "LPJmL4_for_MAgPIE_44ac93de", # nolint
       } else if (grepl("lake_evap|input_lake", subtype)) {
         ## In LPJmL: given in mm (=liter/m^2)
         # Multiply by lake share
-        lakeShare <- readSource("LPJmLInputs_new", subtype = "lakeshare", convert = "onlycorrect")
+        lakeShare <- readSource("LPJmLInputs", subtype = "lakeshare", convert = "onlycorrect")
         x          <- x * lakeShare
 
         # Transform units: liter/m^2 -> liter
