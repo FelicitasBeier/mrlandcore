@@ -12,117 +12,55 @@
 #' \dontrun{
 #' readSource("LPJmL", convert = FALSE)
 #' }
-#' @importFrom utils head
-#' @importFrom stringr str_detect
+#' @importFrom utils download.file untar
 #' @importFrom madrat toolSplitSubtype
 
-downloadLPJmL <- function(subtype = "LPJmL4_for_MAgPIE_44ac93de:GSWP3-W5E5:historical:soilc") { # nolint
+downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:pnv:GSWP3-W5E5:historical:soilc") { # nolint
 
   x     <- toolSplitSubtype(subtype,
-                            list(version = NULL,
+                            list(version      = NULL,
+                                 runtype      = NULL,
                                  climatemodel = NULL,
-                                 scenario = NULL,
-                                 variable = NULL))
+                                 scenario     = NULL,
+                                 variable     = NULL))
 
-  files <- c(soilc              = "soilc",
-             soilc_layer        = "soilc_layer",
-             litc               = "litc",
-             vegc               = "vegc",
-             alitfallc          = "litfallc",
-             # alitterfallc       = "alitterfallc_natveg",
-             alitterfallc_wood  = "litfallc_wood",
-             alitterburnc       = "litburnc",
-             alitterburnc_wood  = "litburnc_wood",
-             harvest            = "pft_harvestc",
-             irrig              = "cft_airrig",
-             # cwater_b           = "cft_consump_water_b.pft",
-             cft_evap           = "cft_evap",
-             cft_transp         = "cft_transp",
-             cft_interc         = "cft_interc",
-             sdate              = "sdate",
-             hdate              = "hdate",
-             mpet               = "pet",
-             # met_grass_ir       = "met_grass_ir",
-             # met_grass_rf       = "met_grass_rf",
-             cft_evap_grass     = "cft_evap_grass",
-             cft_transp_grass   = "cft_transp_grass",
-             cft_interc_grass   = "cft_interc_grass",
-             # cft_et_grass_ir    = "cft_et_grass_ir",
-             # cft_et_grass_rf    = "cft_et_grass_rf",
-             aprec              = "prec",
-             # aet                = "aet_natveg",
-             evap               = "evap",
-             transp             = "transp",
-             interc             = "interc",
-             mdischarge         = "discharge",
-             mrunoff            = "runoff",
-             # mgpp_grass_ir      = "mgpp_grass_ir",
-             # mgpp_grass_rf      = "mgpp_grass_rf",
-             # cft_gpp_grass_ir   = "cft_gpp_grass_ir",
-             # cft_gpp_grass_rf   = "cft_gpp_grass_rf",
-             cft_gpp_grass      = "cft_gpp_grass",
-             vegc_avg           = "vegc_avg",
-             # vegc_grass         = "vegc_mangrass",
-             # litc_grass         = "litc_mangrass",
-             # soilc_grass        = "soilc_mangrass",
-             # soilc_past_hist    = "soilc_hist",
-             # soilc_past_scen    = "soilc_scen",
-             # grass_pft_hist     = "pft_harvest_hist.pft",
-             # grass_pft_scen     = "pft_harvest_scen.pft",
-             # cshift_fast        = "cshift_fast_natveg",
-             # cshift_slow        = "cshift_slow_natveg",
-             fpc                = "fpc")
+  map      <- toolGetMapping("lpjmlSubtype2Filename.csv", where = "mrlandcore")
+  filename <- map$filename[map$subtype == x$variable]
 
-  # handling the separate sources of grass runs
-  if (!grepl("Pasture", x$version, ignore.case = TRUE)) {
-    storage   <- "/p/projects/landuse/users/cmueller/"  # nolint: absolute_path_linter.
-  } else {
-    storage   <- "/p/projects/rd3mod/inputdata/sources/LPJmL/"  # nolint: absolute_path_linter.
-  }
+  # build a zenodo download
+  # check zenodor or ZenodoManager for easy downloading,
+  # or simply use
+  #     download.file(url, destfile)                            # nolint: commented_code_linter.
+  #     untar(destfile)                                         # nolint: commented_code_linter.
+  #     unlink/file.remove(destfile) -> should be rmoved???     # nolint: commented_code_linter.
+  # if zenodo download is not available
+  zenodo <- FALSE
 
-  path <- paste(x$version, x$climatemodel, x$scenario, sep = "/")
-  if (!dir.exists(file.path(storage, path))) {
-    path <- paste(x$version, gsub("-", "_", x$climatemodel), x$scenario, sep = "/")
-  }
-
-  listFiles <- list.files(paste0(storage, path))
-  file      <- grep(toolSubtypeSelect(x$variable, files), listFiles, value = TRUE)
-  filePath  <- paste0(storage, path, "/", file)
-
-  .findFile <- function(storage, path, listFiles, file) {
-    outputFiles <- grep(".out", listFiles, value = TRUE)
-    filesOut    <- file.path(storage, path, outputFiles)
-    order       <- order(file.info(filesOut)$ctime, decreasing = TRUE)
-    filesOut    <- filesOut[order]
-    outputFiles <- outputFiles[order]
-    x   <- sapply(filesOut, function(x) list(readLines(x))) # nolint
-    out <- sapply(x, function(x) any(stringr::str_detect(x, file))) # nolint
-    return(outputFiles[out][1])
-  }
-
-  if (file.exists(filePath)) {
-    file.copy(filePath, file)
-    if (grepl("Pasture", x$version, ignore.case = TRUE)) {
-      files2copy <- .findFile(storage, path, listFiles, file)
-      file.copy(file.path(storage, path, files2copy), files2copy, overwrite = TRUE)
+  if (zenodo == FALSE) {
+    path      <- paste0("/p/projects/landuse/LPJmL_for_MAgPIE/",  # nolint: absolute_path_linter.
+                        "runs_", x$version, "/output/",
+                        paste("run", tolower(x$climatemodel), x$scenario, x$runtype, sep = "_"),
+                        "/", filename, ".tgz")
+    if (file.exists(path)) {
+      utils::untar(path, exdir = ".")
     } else {
-      file.copy(paste0(storage, path, "/lpjml_log.out"), "lpjml_log.out")
+      stop("Data is not available. Please check, if the variable was created
+           for this version, runtype and climatescenario")
     }
-  } else {
-    stop("Data is not available so far!")
   }
+
+  # read metadata from somewhere maybe using #' @importFrom jsonlite fromJSON
 
   # Compose meta data
-  return(list(url           = paste0(storage, filePath),
-              doi           = NULL,
-              title         = x$version,
-              author        = list(person("Christoph", "Mueller", email = "cmueller@pik-potsdam.de"),
-                                   person("Jens",      "Heinke",  email = "heinke@pik-potsdam.de"),
-                                   person("Stephen",   "Writh",   email = "wirth@pik-potsdam.de")),
-              version       = x$version,
-              release_date  = NULL,
-              description   = NULL,
-              license       = "Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)",
+  return(list(url           = NULL,   # UPDATE
+              doi           = NULL,    # UPDATE
+              title         = subtype,    # UPDATE
+              author        = list(person("Jens",      "Heinke",  email = "heinke@pik-potsdam.de"),
+                                   person("Christoph", "Mueller", email = "cmueller@pik-potsdam.de")),
+              version       = x$version,    # UPDATE
+              release_date  = NULL,    # UPDATE
+              description   = NULL,    # UPDATE
+              license       = "Creative Commons Attribution 4.0 International (CC BY 4.0) License",
               reference     = NULL)
   )
 }
