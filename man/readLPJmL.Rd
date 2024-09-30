@@ -4,7 +4,7 @@
 \alias{readLPJmL}
 \title{readLPJmL}
 \usage{
-readLPJmL(subtype = "LPJmL4_for_MAgPIE_44ac93de:GSWP3-W5E5:historical:soilc")
+readLPJmL(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate")
 }
 \arguments{
 \item{subtype}{Switch between different inputs
@@ -20,11 +20,10 @@ Read in LPJmL outputs
 \dontrun{
 readSource("LPJmL", convert = FALSE)
 }
-
 }
 \seealso{
 [readLPJ()]
 }
 \author{
-Kristine Karstens, Abhijeet Mishra, Felicitas Beier, Marcos Alves
+Felicitas Beier, Sebastian Ostberg, Michael Crawford
 }

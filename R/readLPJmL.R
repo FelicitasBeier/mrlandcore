@@ -7,7 +7,7 @@
 #'
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #'
-#' @author Kristine Karstens, Abhijeet Mishra, Felicitas Beier, Marcos Alves
+#' @author Felicitas Beier, Sebastian Ostberg, Michael Crawford
 #'
 #' @seealso
 #' [readLPJ()]
@@ -15,113 +15,88 @@
 #' \dontrun{
 #' readSource("LPJmL", convert = FALSE)
 #' }
-#'
-#' @importFrom madrat toolSplitSubtype
-#' @importFrom magpiesets addLocation
-#' @importFrom lpjclass readLPJ
-#' @importFrom stringr str_subset str_trim str_split
-#' @importFrom dplyr %>%
-#'
 
+# nolint start
 ### This function should be adjusted during the LPJmL - MAgPIE - Hackathon ###
+# Testing locations:
+# /p/projects/rd3mod/inputdata/sources/LPJmL
+# example subtype: lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate
 
-readLPJmL <- function(subtype = "LPJmL4_for_MAgPIE_44ac93de:GSWP3-W5E5:historical:soilc") { # nolint
+# Testing data:
+# subtype <- "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate"
+# setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.pnv.mrunoff")
+# setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate")
+# nolint end
 
-  subtype <- toolSplitSubtype(subtype,
-                              list(version = NULL,
-                                   climatemodel = NULL,
-                                   scenario = NULL,
-                                   variable = NULL))$variable
+readLPJmL <- function(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate") {
 
-  .prepareLPJ <- function(datatype = numeric(),
-                          bytes = 4,
-                          monthly = FALSE,
-                          nbands = NULL) { # nbands will be overwritten for clm data
-
-    filename <- Sys.glob(c("*.bin", "*.clm"))
-    filetype <- tail(unlist(strsplit(filename, "\\.")), 1)
-
-    if (filetype == "clm") {
-      filedata <- file(description = filename,
-                       open = "rb",
-                       blocking = TRUE,
-                       encoding = getOption("encoding"))
-      seek(filedata, where = 15, origin = "start")
-      inHeader <- as.numeric(readBin(filedata,
-                                     what = integer(),
-                                     size = 4,
-                                     n = 5,
-                                     endian = .Platform$endian))
-      startYear <- inHeader[1]
-      nyear     <- inHeader[2]
-      nbands    <- inHeader[5] # nbands will be overwritten for clm data
-      years     <- seq(startYear, startYear + nyear - 1, 1)
-      headlines <- 51 # generation clm 3
-      close(filedata)
-
-    } else if (filetype == "bin") {
-
-      outfile   <- grep(".out", list.files(), value = TRUE) %>% head(1)
-      out       <- readLines(outfile)
-      startYear <- out %>%
-        str_subset("Output written in year:") %>%
-        str_split(":") %>%
-        unlist() %>%
-        str_trim() %>%
-        subset(c(FALSE, TRUE)) %>%
-        as.numeric()
-      endYear <- out %>%
-        str_subset("Last year:") %>%
-        str_split(":") %>%
-        unlist() %>%
-        str_trim() %>%
-        subset(c(FALSE, TRUE)) %>%
-        as.numeric()
-      years <- seq(startYear, endYear, 1)
-      headlines <- 0
-
-    } else {
-      stop("File format of LPJmL input data unknown. Please provide .clm or .bin file format.")
-    }
-
-    x <- readLPJ(file_name       = filename,
-                 wyears          = years,
-                 syear           = startYear,
-                 headlines       = headlines,
-                 averaging_range = 1,
-                 ncells          = 67420,
-                 file_type       = "bin",
-                 bands           = nbands,
-                 datatype        = datatype,
-                 bytes           = bytes,
-                 monthly         = monthly)
-
-    class(x) <- "array"
-    x        <- collapseNames(as.magpie(x, spatial = 1))
-    x        <- collapseDim(addLocation(x), dim = "N")
-    x        <- clean_magpie(x)
-
-    return(x)
+  # filenames for dataset and grid
+  files <- list.files(path = subtype, pattern = "\\.bin\\.json$", full.names = TRUE)
+  gridname <- lpjmlkit::find_varfile(subtype, variable = "grid")
+  dataname <- grep("grid", files, invert = TRUE, value = TRUE)
+  if (length(dataname) != 1) {
+    stop("More than one data file is present in the LPJmL source directory.")
   }
 
-  if (subtype %in% c("soilc", "litc", "vegc", "alitfallc", "aet",
-                     "vegc_grass", "litc_grass", "soilc_grass",
-                     "aprec", "soilc_past_hist", "soilc_past_scen") || grepl("alitter", subtype)) {
-    x <- .prepareLPJ(nbands = 1)
-  } else if (grepl("*date*", subtype)) {
-    x <- .prepareLPJ(nbands = 24, datatype = integer(), bytes = 2)
-  } else if (subtype %in% c("soilc_layer", "cshift_slow", "cshift_fast")) {
-    x <- .prepareLPJ(nbands = 5)
-  } else if (grepl("mdischarge|mrunoff|mpet|mgpp_grass_ir|mgpp_grass_rf|met_grass_ir|met_grass_rf", subtype)) {
-    x <- .prepareLPJ(monthly = TRUE)
-  } else if (grepl("harvest|irrig|cwater_b|grass_pft|cft_gpp_grass_rf|cft_gpp_grass_ir|cft_et_grass_rf|cft_et_grass_ir|cft_transp_pft", # nolint
-                   subtype)) {
-    x <- .prepareLPJ(nbands = 32)
-  } else if (grepl("fpc", subtype)) {
-    x <- .prepareLPJ(nbands = 12)
+  # read in LPJmL dataset
+  x <- lpjmlkit::read_io(dataname)
+
+  # generate a mapping from LPJmL lon-lat to MAgPIE coord
+  # extract grid information
+  x$add_grid(gridname, silent = TRUE)
+  grid <- x$grid$data
+
+  # transform to format of magpie object while maintaining cell order
+  lon <- gsub("\\.", "p", grid[, "lon"])
+  lat <- gsub("\\.", "p", grid[, "lat"])
+  coordsLPJmL <- paste(lon, lat, sep = ".")
+
+  # sort mapping according to provided grid to ensure consistency
+  mapping <- mstools::toolGetMappingCoord2Country(pretty = FALSE, extended = FALSE)
+  matches <- match(x = coordsLPJmL, table = mapping$coords)
+  if (any(is.na(matches))) {
+    stop("Discrepancy between spatial extent of LPJmL coords and MAgPIE coords")
+  }
+  mapping <- mapping[matches, ]
+
+  # transform time dimension
+  x$transform(to = "year_month_day")
+  if ("month" %in% names(dimnames(x))) {
+    x <- aperm(x$data, c("cell", "year", "month", "band"))
   } else {
-    stop(paste0("subtype ", subtype, " is not existing"))
+    x <- x$data
+  }
+  x <- drop(x)
+
+  # transform x into a MAgPIE object
+  x <- magclass::as.magpie(x, spatial = 1)
+
+  meta <- lpjmlkit::read_meta(dataname)
+  bandNames <- sub("^(rainfed|irrigated)\\s+", "", meta$band_names)
+
+  # MIKE: Move mapping to mrlandcore
+  lpj2mag <- madrat::toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
+  hasCrops <- any(bandNames %in% lpj2mag$LPJmL5)
+  if (hasCrops) {
+
+    # differentiate between rainfed and irrigated crops in the case of crop data
+    irrigation <- sub(" .*", "", getNames(x)) # select first word (of, e.g. "rainfed temperature cereals")
+    crop <- sub("^[^ ]+\\s+", "", getNames(x)) # select everything after first word
+    x <- magclass::add_dimension(x, dim = 3.1, add = "irrigation", nm = "dummy")
+    getNames(x, dim = "irrigation") <- irrigation
+    getNames(x, dim = "band") <- crop
+
+    # transform LPJmL5 to LPJmL-internal names
+    x <- madrat::toolAggregate(x, rel = lpj2mag, from = "LPJmL5", to = "LPJmL", dim = 3.2, partrel = TRUE)
+    magclass::getSets(x)["d3.2"] <- "crop"
+
   }
 
-  return(round(x, digits = 10))
+  # use coordinate mapping to assign MAgPIE coords and iso
+  x <- magclass::add_dimension(x, dim = 1.1, add = "lon", nm = "dummy")
+  x <- magclass::add_dimension(x, dim = 1.2, add = "lat", nm = "dummy")
+  magclass::getItems(x, dim = 1, raw = TRUE) <- paste(mapping$coords, mapping$iso, sep = ".")
+  magclass::getSets(x)[c("d1.1", "d1.2", "d1.3")] <- c("x", "y", "iso")
+
+  return(x)
 }
