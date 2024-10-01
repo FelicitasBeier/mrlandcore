@@ -26,6 +26,7 @@
 # subtype <- "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate"
 # setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.pnv.mrunoff")
 # setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate")
+# setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/")
 # nolint end
 
 readLPJmL <- function(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate") {
@@ -71,25 +72,35 @@ readLPJmL <- function(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate") 
   # transform x into a MAgPIE object
   x <- magclass::as.magpie(x, spatial = 1)
 
-  meta <- lpjmlkit::read_meta(dataname)
-  bandNames <- sub("^(rainfed|irrigated)\\s+", "", meta$band_names)
-
   # MIKE: Move mapping to mrlandcore
   lpj2mag <- madrat::toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
-  hasCrops <- any(bandNames %in% lpj2mag$LPJmL5)
+  meta <- lpjmlkit::read_meta(dataname)
+
+  hasCrops <- any(sub("^(rainfed|irrigated)\\s+", "", meta$band_names) %in% lpj2mag$LPJmL5)
   if (hasCrops) {
 
-    # differentiate between rainfed and irrigated crops in the case of crop data
-    irrigation <- sub(" .*", "", getNames(x)) # select first word (of, e.g. "rainfed temperature cereals")
-    crop <- sub("^[^ ]+\\s+", "", getNames(x)) # select everything after first word
-    x <- magclass::add_dimension(x, dim = 3.1, add = "irrigation", nm = "dummy")
-    getNames(x, dim = "irrigation") <- irrigation
-    getNames(x, dim = "band") <- crop
+    hasIrrigationStatus <- grepl("^(rainfed|irrigated)\\b", meta$band_names)
+    if (any(hasIrrigationStatus == TRUE) && any(hasIrrigationStatus == FALSE)) {
+      stop("Mixed irrigation status within LPJmL crop data is an unsupported case")
+    }
+
+    if (all(hasIrrigationStatus)) {
+
+      # differentiate between rainfed and irrigated crops in the case of crop data
+      irrigation <- sub(" .*", "", magclass::getNames(x)) # select first word (of, e.g. "rainfed temperature cereals")
+      x <- magclass::add_dimension(x, dim = 3.1, add = "irrigation", nm = "dummy")
+      magclass::getNames(x, dim = "irrigation") <- irrigation
+
+      magclass::getSets(x)["d3.2"] <- "crop"
+      crop <- sub("^[^ ]+\\s+", "",  magclass::getNames(x)) # select everything after first word
+      magclass::getNames(x, dim = "crop") <- crop
+
+    } else {
+      magclass::getSets(x)["d3.1"] <- "crop"
+    }
 
     # transform LPJmL5 to LPJmL-internal names
-    x <- madrat::toolAggregate(x, rel = lpj2mag, from = "LPJmL5", to = "LPJmL", dim = 3.2, partrel = TRUE)
-    magclass::getSets(x)["d3.2"] <- "crop"
-
+    x <- madrat::toolAggregate(x, rel = lpj2mag, from = "LPJmL5", to = "LPJmL", dim = "crop", partrel = TRUE)
   }
 
   # use coordinate mapping to assign MAgPIE coords and iso
