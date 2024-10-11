@@ -3,7 +3,6 @@
 #' @description Read in LPJmL outputs
 #'
 #' @param subtype Switch between different inputs
-#'                (eg. "LPJmL5.2_Pasture:IPSL_CM6A_LR:ssp126_co2_limN_00:soilc_past_hist")
 #'
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #'
@@ -72,8 +71,7 @@ readLPJmL <- function(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate") 
   # transform x into a MAgPIE object
   x <- magclass::as.magpie(x, spatial = 1)
 
-  # MIKE: Move mapping to mrlandcore
-  lpj2mag <- madrat::toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
+  lpj2mag <- madrat::toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mrlandcore")
   meta <- lpjmlkit::read_meta(dataname)
 
   hasCrops <- any(sub("^(rainfed|irrigated)\\s+", "", meta$band_names) %in% lpj2mag$LPJmL5)

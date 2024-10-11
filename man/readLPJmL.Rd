@@ -7,8 +7,7 @@
 readLPJmL(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate")
 }
 \arguments{
-\item{subtype}{Switch between different inputs
-(eg. "LPJmL5.2_Pasture:IPSL_CM6A_LR:ssp126_co2_limN_00:soilc_past_hist")}
+\item{subtype}{Switch between different inputs}
 }
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.
