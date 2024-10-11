@@ -4,7 +4,7 @@
 \alias{readLPJmL}
 \title{readLPJmL}
 \usage{
-readLPJmL(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate")
+readLPJmL(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crop:sdate")
 }
 \arguments{
 \item{subtype}{Switch between different inputs}

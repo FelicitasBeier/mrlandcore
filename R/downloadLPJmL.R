@@ -19,9 +19,9 @@ downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:pnv:GSWP3-W5E5:historical:soi
 
   x     <- toolSplitSubtype(subtype,
                             list(version      = NULL,
-                                 runtype      = NULL,
                                  climatemodel = NULL,
                                  scenario     = NULL,
+                                 runtype      = NULL,
                                  variable     = NULL))
 
   map      <- toolGetMapping("lpjmlSubtype2Filename.csv", where = "mrlandcore")

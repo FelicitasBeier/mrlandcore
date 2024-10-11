@@ -28,7 +28,7 @@
 # setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/")
 # nolint end
 
-readLPJmL <- function(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate") {
+readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crop:sdate") {
 
   # filenames for dataset and grid
   files <- list.files(path = subtype, pattern = "\\.bin\\.json$", full.names = TRUE)
@@ -72,6 +72,8 @@ readLPJmL <- function(subtype = "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate") 
   x <- magclass::as.magpie(x, spatial = 1)
 
   lpj2mag <- madrat::toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mrlandcore")
+  # TO BE DISCUSSED, this again makes it very unflexible to read in new crops from LPJmL, as LN:102
+  # will fail if this mapping is not accordingly updated to new crop types. Why not use the long names?
   meta <- lpjmlkit::read_meta(dataname)
 
   hasCrops <- any(sub("^(rainfed|irrigated)\\s+", "", meta$band_names) %in% lpj2mag$LPJmL5)
