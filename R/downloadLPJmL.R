@@ -10,12 +10,12 @@
 #' @author Kristine Karstens, Marcos Alves, Felicitas Beier
 #' @examples
 #' \dontrun{
-#' readSource("LPJmL", convert = FALSE)
+#' readSource("LPJmL", subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soilc", convert = FALSE)
 #' }
 #' @importFrom utils download.file untar
 #' @importFrom madrat toolSplitSubtype
 
-downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:pnv:GSWP3-W5E5:historical:soilc") { # nolint
+downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soilc") { # nolint
 
   x     <- toolSplitSubtype(subtype,
                             list(version      = NULL,
@@ -49,15 +49,17 @@ downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:pnv:GSWP3-W5E5:historical:soi
     }
   }
 
-  # read metadata from somewhere maybe using #' @importFrom jsonlite fromJSON
+  # read metadata
+  metaJson <- lpjmlkit::read_meta(paste0(filename, ".bin.json"))
 
   # Compose meta data
   return(list(url           = NULL,   # UPDATE
               doi           = NULL,    # UPDATE
-              title         = subtype,    # UPDATE
+              title         = metaJson$variable,    # UPDATE
+              unit          = metaJson$unit,
               author        = list(person("Jens",      "Heinke",  email = "heinke@pik-potsdam.de"),
                                    person("Christoph", "Mueller", email = "cmueller@pik-potsdam.de")),
-              version       = x$version,    # UPDATE
+              version       = metaJson$source,    # UPDATE
               release_date  = NULL,    # UPDATE
               description   = NULL,    # UPDATE
               license       = "Creative Commons Attribution 4.0 International (CC BY 4.0) License",
