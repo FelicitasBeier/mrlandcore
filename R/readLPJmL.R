@@ -31,8 +31,8 @@
 readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crop:sdate") {
 
   # filenames for dataset and grid
-  files <- list.files(path = subtype, pattern = "\\.bin\\.json$", full.names = TRUE)
-  gridname <- lpjmlkit::find_varfile(subtype, variable = "grid")
+  files <- list.files(path = ".", pattern = "\\.bin\\.json$", full.names = TRUE)
+  gridname <- lpjmlkit::find_varfile(".", variable = "grid")
   dataname <- grep("grid", files, invert = TRUE, value = TRUE)
   if (length(dataname) != 1) {
     stop("More than one data file is present in the LPJmL source directory.")
@@ -74,7 +74,7 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crop:sdate") {
   lpj2mag <- madrat::toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mrlandcore")
   # TO BE DISCUSSED, this again makes it very unflexible to read in new crops from LPJmL, as LN:102
   # will fail if this mapping is not accordingly updated to new crop types. Why not use the long names?
-  meta <- lpjmlkit::read_meta(dataname)
+  meta    <- lpjmlkit::read_meta(dataname)
 
   hasCrops <- any(sub("^(rainfed|irrigated)\\s+", "", meta$band_names) %in% lpj2mag$LPJmL5)
   if (hasCrops) {
@@ -99,13 +99,13 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crop:sdate") {
       magclass::getSets(x)["d3.1"] <- "crop"
     }
 
-    # transform LPJmL5 to LPJmL-internal names
+    # transform LPJmL5 to LPJmL-internal names as of mapping
     x <- madrat::toolAggregate(x, rel = lpj2mag, from = "LPJmL5", to = "LPJmL", dim = "crop", partrel = TRUE)
   }
 
   # use coordinate mapping to assign MAgPIE coords and iso
-  x <- magclass::add_dimension(x, dim = 1.1, add = "lon", nm = "dummy")
-  x <- magclass::add_dimension(x, dim = 1.2, add = "lat", nm = "dummy")
+  x <- magclass::add_dimension(x, dim = 1.1, add = "x", nm = "dummy")
+  x <- magclass::add_dimension(x, dim = 1.2, add = "y", nm = "dummy")
   magclass::getItems(x, dim = 1, raw = TRUE) <- paste(mapping$coords, mapping$iso, sep = ".")
   magclass::getSets(x)[c("d1.1", "d1.2", "d1.3")] <- c("x", "y", "iso")
 

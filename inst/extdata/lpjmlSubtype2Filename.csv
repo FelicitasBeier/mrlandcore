@@ -24,6 +24,7 @@ transp,transp
 interc,interc
 mdischarge,discharge
 mrunoff,runoff
+cft_gpp,cft_gpp
 cft_gpp_grass,cft_gpp_grass
 vegc_avg,vegc_avg
 fpc,fpc
