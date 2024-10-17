@@ -3,6 +3,7 @@
 export(calcForestArea)
 export(readLPJmLClimateInput)
 export(readLPJmLClimateInput_new)
+export(toolCellArea)
 export(toolClimateInputVersion)
 export(toolForestRelocate)
 export(toolLPJmLVersion)

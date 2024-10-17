@@ -1,21 +1,21 @@
-MAgPIE,LPJmL,LPJmL5,Reportingnames,toLPJmL
-tece,tece,temperate cereals,Temperate cereals,tece
-maiz,maize,maize,Maize,maize
-trce,trce,tropical cereals,Tropical cereals,trce
-rice_pro,rice,rice,Rice,rice
-soybean,soybean,oil crops soybean,Soybean,soybean
-rapeseed,rapeseed,oil crops rapeseed,Other oil crops (incl rapeseed),rapeseed
-groundnut,groundnut,oil crops groundnut,Groundnuts,groundnut
-sunflower,sunflower,oil crops sunflower,Sunflower,sunflower
-oilpalm,groundnut,oil crops groundnut,Oilpalms,others
-puls_pro,pulses,pulses,Pulses,pulses
-potato,tero,temperate roots,Potatoes,tero
-cassav_sp,trro,tropical roots,Tropical roots,trro
-sugr_cane,sugarcane,sugarcane,Sugar cane,sugarcane
-sugr_beet,tero,temperate roots,Sugar beet,tero
-others,maize,maize,Fruits Vegetables Nuts,others
-cottn_pro,groundnut,oil crops groundnut,Cotton,others
-foddr,maize,maize,Forage,others
-pasture,mgrass,pasture,Pasture,mgrass
-begr,begr,biomass grass,Short rotation grasses,begr
-betr,betr,biomass tree,Short rotation trees,betr
+MAgPIE,LPJmL5,Reportingnames
+tece,temperate cereals,Temperate cereals
+maiz,maize,Maize
+trce,tropical cereals,Tropical cereals
+rice_pro,rice,Rice
+soybean,oil crops soybean,Soybean
+rapeseed,oil crops rapeseed,Other oil crops (incl rapeseed)
+groundnut,oil crops groundnut,Groundnuts
+sunflower,oil crops sunflower,Sunflower
+oilpalm,oil crops groundnut,Oilpalms
+puls_pro,pulses,Pulses
+potato,temperate roots,Potatoes
+cassav_sp,tropical roots,Tropical roots
+sugr_cane,sugarcane,Sugar cane
+sugr_beet,temperate roots,Sugar beet
+others,maize,Fruits Vegetables Nuts
+cottn_pro,oil crops groundnut,Cotton
+foddr,maize,Forage
+pasture,pasture,Pasture
+begr,biomass grass,Short rotation grasses
+betr,biomass tree,Short rotation trees

@@ -24,8 +24,6 @@ downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soi
                                  runtype      = NULL,
                                  variable     = NULL))
 
-  map      <- toolGetMapping("lpjmlSubtype2Filename.csv", where = "mrlandcore")
-  filename <- map$filename[map$subtype == x$variable]
 
   # build a zenodo download
   # check zenodor or ZenodoManager for easy downloading,
@@ -40,7 +38,7 @@ downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soi
     path      <- paste0("/p/projects/landuse/LPJmL_for_MAgPIE/",  # nolint: absolute_path_linter.
                         "runs_", x$version, "/output/",
                         paste("run", tolower(x$climatemodel), x$scenario, x$runtype, sep = "_"),
-                        "/", filename, ".tgz")
+                        "/", x$variable, ".tgz")
     if (file.exists(path)) {
       utils::untar(path, exdir = ".")
     } else {
@@ -50,7 +48,7 @@ downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soi
   }
 
   # read metadata
-  metaJson <- lpjmlkit::read_meta(paste0(filename, ".bin.json"))
+  metaJson <- lpjmlkit::read_meta(paste0(x$variable, ".bin.json"))
 
   # Compose meta data
   return(list(url           = NULL,   # UPDATE
