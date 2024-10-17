@@ -94,7 +94,8 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE,
                                    where = "mappingfolder")
       mag2lpj    <- mag2lpj[!(mag2lpj$MAgPIE == "pasture"), ]
 
-      lpjCroparea <- toolAggregate(magCroparea, rel = mag2lpj, from = "MAgPIE", to = "LPJmL", dim = 3.1)
+      lpjCroparea <- toolAggregate(magCroparea, rel = mag2lpj, dim = 3.1,
+                                   from = "MAgPIE", to = "LPJmL5")
       data        <- lpjCroparea
 
     } else {
@@ -202,7 +203,8 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE,
       mag2lpj      <- toolGetMapping(type = "sectoral", name = "MAgPIE_LPJmL.csv",
                                      where = "mappingfolder")
       mag2lpj      <- mag2lpj[!(mag2lpj$MAgPIE == "pasture"), ]
-      lpjCroparea   <- toolAggregate(magCroparea, rel = mag2lpj, from = "MAgPIE", to = "LPJmL", dim = "MAG")
+      lpjCroparea   <- toolAggregate(magCroparea, rel = mag2lpj, dim = "MAG",
+                                     from = "MAgPIE", to = "LPJmL5")
       data          <- lpjCroparea
 
     } else {

@@ -249,7 +249,7 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
       mapMagToLpj <- mapMagToLpj[!(mapMagToLpj$MAgPIE %in% nonCrops), ]
 
       cropArea <- toolAggregate(cropArea, rel = mapMagToLpj,
-                                from = "MAgPIE", to = "LPJmL", dim = "crop")
+                                from = "MAgPIE", to = "LPJmL5", dim = "crop")
     } else {
       stop("This sectoral aggregation is not available in calcCropareaLandInG")
     }
