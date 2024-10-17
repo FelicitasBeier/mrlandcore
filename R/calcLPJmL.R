@@ -59,14 +59,14 @@ calcLPJmL <- function(version = "LPJmL4_for_MAgPIE_44ac93de", # nolint
 
     if (!grepl("historical", cfg$climatetype)) {
 
-      x     <- mbind(readSource("LPJmL_new", subtype = readinHist, convert = "onlycorrect"),
-                     readSource("LPJmL_new", subtype = readinName, convert = "onlycorrect"))
+      x     <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
+                     readSource("LPJmL", subtype = readinName, convert = "onlycorrect"))
       years <- getYears(x, as.integer = TRUE)
       x     <- x[, years[years >= 1951], ]
 
     } else {
 
-      x     <- readSource("LPJmL_new", subtype = readinName, convert = "onlycorrect")
+      x     <- readSource("LPJmL", subtype = readinName, convert = "onlycorrect")
       years <- getYears(x, as.integer = TRUE)
       if (!grepl("1901", stage)) x <- x[, years[years >= 1930], ]
 
@@ -212,7 +212,7 @@ calcLPJmL <- function(version = "LPJmL4_for_MAgPIE_44ac93de", # nolint
 
   } else if (stage == "harmonized") {
     # read in historical data for subtype
-    baseline        <- calcOutput("LPJmL_new", version = cfg$baseline_version,
+    baseline        <- calcOutput("LPJmL", version = cfg$baseline_version,
                                   climatetype = cfg$baseline_hist, subtype = subtype,
                                   subdata = subdata, stage = "smoothed",
                                   aggregate = FALSE, supplementary = TRUE)
@@ -220,14 +220,14 @@ calcLPJmL <- function(version = "LPJmL4_for_MAgPIE_44ac93de", # nolint
     unit            <- baseline$unit
     baseline        <- baseline$x
 
-    x   <- calcOutput("LPJmL_new", version = cfg$readin_version,
+    x   <- calcOutput("LPJmL", version = cfg$readin_version,
                       climatetype = cfg$climatetype, subtype = subtype,
                       subdata = subdata, stage = "smoothed", aggregate = FALSE)
     out <- toolHarmonize2Baseline(x, baseline, ref_year = cfg$ref_year_hist)
 
   } else if (stage == "harmonized2020") {
     # read in historical data for subtype
-    baseline2020    <- calcOutput("LPJmL_new", version = cfg$baseline_version,
+    baseline2020    <- calcOutput("LPJmL", version = cfg$baseline_version,
                                   climatetype = cfg$baseline_gcm, subtype = subtype,
                                   subdata = subdata, stage = "harmonized",
                                   aggregate = FALSE, supplementary = TRUE)
@@ -242,7 +242,7 @@ calcLPJmL <- function(version = "LPJmL4_for_MAgPIE_44ac93de", # nolint
 
     } else {
 
-      x   <- calcOutput("LPJmL_new", version = cfg$readin_version,
+      x   <- calcOutput("LPJmL", version = cfg$readin_version,
                         climatetype = cfg$climatetype, subtype = subtype,
                         subdata = subdata, stage = "smoothed", aggregate = FALSE)
       out <- toolHarmonize2Baseline(x, baseline2020, ref_year = cfg$ref_year_gcm)

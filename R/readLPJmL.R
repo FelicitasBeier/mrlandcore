@@ -28,7 +28,7 @@
 # setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/")
 # nolint end
 
-readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crop:sdate") {
+readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
 
   # filenames for dataset and grid
   files <- list.files(path = ".", pattern = "\\.bin\\.json$", full.names = TRUE)
