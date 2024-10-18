@@ -99,8 +99,6 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
       magclass::getSets(x)["d3.1"] <- "crop"
     }
 
-    # transform LPJmL5 to LPJmL-internal names as of mapping
-    x <- madrat::toolAggregate(x, rel = lpj2mag, from = "LPJmL5", to = "LPJmL", dim = "crop", partrel = TRUE)
   }
 
   # use coordinate mapping to assign MAgPIE coords and iso
