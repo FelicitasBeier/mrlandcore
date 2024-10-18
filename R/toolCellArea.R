@@ -1,19 +1,19 @@
 #' @title toolCellArea
-#' @description Calculates  cell area for a given object
+#' @description Calculates cell area (in Mha) for a given object
 #'
-#' @param x corrdinated mag object
+#' @param x magpie object with coordinate data
 #' @return mag object
-#' @author Kristine Karstens
+#' @author Kristine Karstens, Felicitas Beier
 #' @export
 
 toolCellArea <- function(x) {
 
   if (!magclass::hasCoords(x)) {
-    stop("Coordinate data is expected (called `x` and `y`)")
+    stop("Coordinate data is expected (called `x` and `y`) by toolCellArea")
   }
 
   if (length(getItems(x, dim = 1)) != 67420) {
-    stop("Half-degree data with 67420 expected.")
+    stop("Half-degree data with 67420 cells is expected by toolCellArea")
   }
 
   coords    <- getItems(x, dim = c("x", "y"), full = TRUE)
