@@ -32,7 +32,7 @@ calcMulticroppingSuitability <- function(selectyears, lpjml, climatetype,
   # mappings
   lpj2mag  <- toolGetMapping("MAgPIE_LPJmL.csv",
                              type = "sectoral",
-                             where = "mappingfolder")
+                             where = "mrlandcore")
   mapCell  <- toolGetMappingCoord2Country()
 
   # crop selection

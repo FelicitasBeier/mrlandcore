@@ -244,8 +244,8 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
       # this is already the format of cropArea
     } else if (sectoral == "lpj") {
       # crop mapping
-      mapMagToLpj <- toolGetMapping(type = "sectoral", name = "MAgPIE_LPJmL.csv",
-                                    where = "mappingfolder")
+      mapMagToLpj <- toolGetMapping(name = "MAgPIE_LPJmL.csv", type = "sectoral",
+                                    where = "mrlandcore")
       mapMagToLpj <- mapMagToLpj[!(mapMagToLpj$MAgPIE %in% nonCrops), ]
 
       cropArea <- toolAggregate(cropArea, rel = mapMagToLpj,
