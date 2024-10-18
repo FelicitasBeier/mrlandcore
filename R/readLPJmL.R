@@ -41,23 +41,9 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
   # read in LPJmL dataset
   x <- lpjmlkit::read_io(dataname)
 
-  # generate a mapping from LPJmL lon-lat to MAgPIE coord
   # extract grid information
   x$add_grid(gridname, silent = TRUE)
   grid <- x$grid$data
-
-  # transform to format of magpie object while maintaining cell order
-  lon <- gsub("\\.", "p", grid[, "lon"])
-  lat <- gsub("\\.", "p", grid[, "lat"])
-  coordsLPJmL <- paste(lon, lat, sep = ".")
-
-  # sort mapping according to provided grid to ensure consistency
-  mapping <- mstools::toolGetMappingCoord2Country(pretty = FALSE, extended = FALSE)
-  matches <- match(x = coordsLPJmL, table = mapping$coords)
-  if (any(is.na(matches))) {
-    stop("Discrepancy between spatial extent of LPJmL coords and MAgPIE coords")
-  }
-  mapping <- mapping[matches, ]
 
   # transform time dimension
   x$transform(to = "year_month_day")
@@ -101,11 +87,17 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
 
   }
 
+  # transform to format of magpie object while maintaining cell order
+  lon <- gsub("\\.", "p", grid[, "lon"])
+  lat <- gsub("\\.", "p", grid[, "lat"])
+  cell <- magclass::getItems(x, dim = 1)
+
   # use coordinate mapping to assign MAgPIE coords and iso
   x <- magclass::add_dimension(x, dim = 1.1, add = "x", nm = "dummy")
   x <- magclass::add_dimension(x, dim = 1.2, add = "y", nm = "dummy")
-  magclass::getItems(x, dim = 1, raw = TRUE) <- paste(mapping$coords, mapping$iso, sep = ".")
-  magclass::getSets(x)[c("d1.1", "d1.2", "d1.3")] <- c("x", "y", "iso")
+  magclass::getItems(x, dim = 1, raw = TRUE) <- paste(lon, lat, cell, sep = ".")
+
+  x <- mstools::toolCoord2Isocoord(x)
 
   return(x)
 }

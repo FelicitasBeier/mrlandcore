@@ -7,14 +7,14 @@
 toolCellArea(x)
 }
 \arguments{
-\item{x}{corrdinated mag object}
+\item{x}{magpie object with coordinate data}
 }
 \value{
 mag object
 }
 \description{
-Calculates  cell area for a given object
+Calculates cell area (in Mha) for a given object
 }
 \author{
-Kristine Karstens
+Kristine Karstens, Felicitas Beier
 }
