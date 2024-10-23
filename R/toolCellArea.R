@@ -23,7 +23,7 @@ toolCellArea <- function(x) {
 
   cellArea  <- magclass::clean_magpie(magclass::as.magpie(cellArea, spatial = 1))
   magclass::getSets(cellArea, fulldim = FALSE)[1:2] <- magclass::getSets(x, fulldim = FALSE)[1:2]
-  magclass::getCells(cellArea) <- magclass::getCells(x)
+  magclass::getItems(cellArea, dim = 1, raw = TRUE) <- magclass::getItems(x, dim = 1)
 
   return(cellArea)
 }
