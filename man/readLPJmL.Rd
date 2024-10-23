@@ -24,5 +24,5 @@ readSource("LPJmL", convert = FALSE)
 [readLPJ()]
 }
 \author{
-Felicitas Beier, Sebastian Ostberg, Michael Crawford
+Felicitas Beier, Sebastian Ostberg, Michael Crawford, Kristine Karstens
 }
