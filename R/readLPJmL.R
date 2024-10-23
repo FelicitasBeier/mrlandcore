@@ -6,7 +6,7 @@
 #'
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #'
-#' @author Felicitas Beier, Sebastian Ostberg, Michael Crawford
+#' @author Felicitas Beier, Sebastian Ostberg, Michael Crawford, Kristine Karstens
 #'
 #' @seealso
 #' [readLPJ()]
@@ -14,19 +14,6 @@
 #' \dontrun{
 #' readSource("LPJmL", convert = FALSE)
 #' }
-
-# nolint start
-### This function should be adjusted during the LPJmL - MAgPIE - Hackathon ###
-# Testing locations:
-# /p/projects/rd3mod/inputdata/sources/LPJmL
-# example subtype: lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate
-
-# Testing data:
-# subtype <- "lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate"
-# setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.pnv.mrunoff")
-# setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/lpjml5.9.5.mag1.MRI.ESM2.0.ssp370.crop.sdate")
-# setwd("/p/projects/rd3mod/inputdata/sources/LPJmL/")
-# nolint end
 
 readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
 
@@ -40,6 +27,11 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
 
   # read in LPJmL dataset
   x <- lpjmlkit::read_io(dataname)
+
+  # extract meta data from file
+  meta    <- lpjmlkit::read_meta(dataname)
+  # extract unit from meta data
+  unit    <- meta$unit
 
   # extract grid information
   x$add_grid(gridname, silent = TRUE)
@@ -57,11 +49,8 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
   # transform x into a MAgPIE object
   x <- magclass::as.magpie(x, spatial = 1)
 
+  # check whether crops from our mapping exist
   lpj2mag <- madrat::toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mrlandcore")
-  # TO BE DISCUSSED, this again makes it very unflexible to read in new crops from LPJmL, as LN:102
-  # will fail if this mapping is not accordingly updated to new crop types. Why not use the long names?
-  meta    <- lpjmlkit::read_meta(dataname)
-
   hasCrops <- any(sub("^(rainfed|irrigated)\\s+", "", meta$band_names) %in% lpj2mag$LPJmL5)
   if (hasCrops) {
 
@@ -99,5 +88,6 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
 
   x <- mstools::toolCoord2Isocoord(x)
 
-  return(x)
+  return(list(x    = x,
+              unit = unit))
 }
