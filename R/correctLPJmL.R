@@ -21,5 +21,10 @@ correctLPJmL <- function(x) {
   ### do we want to check and correct for N/As?
   # Jens?, Kristine?, Mike?
 
-  return(x)
+  description <- "description" # To do: replace once getComment() works
+  unit <- "unit" # To do: replace once getComment() works
+
+  return(list(x = x,
+              description = description,
+              unit = unit))
 }
