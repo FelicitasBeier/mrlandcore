@@ -14,7 +14,7 @@ corrects data that was read in from LPJmL
 }
 \examples{
 \dontrun{
-readSource("LPJmL", convert = "onlycorrect")
+readSource("LPJmL", convert = TRUE)
 }
 
 }

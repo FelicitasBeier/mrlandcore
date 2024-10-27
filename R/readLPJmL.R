@@ -29,9 +29,10 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
   x <- lpjmlkit::read_io(dataname)
 
   # extract meta data from file
-  meta    <- lpjmlkit::read_meta(dataname)
+  meta        <- lpjmlkit::read_meta(dataname)
   # extract unit from meta data
-  unit    <- meta$unit
+  unit        <- meta$unit
+  description <- meta$variable # Sebastian: is it possible to read long_name as well with read_meta?
 
   # extract grid information
   x$add_grid(gridname, silent = TRUE)
@@ -89,5 +90,6 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
   x <- mstools::toolCoord2Isocoord(x)
 
   return(list(x    = x,
+              description = description,
               unit = unit))
 }

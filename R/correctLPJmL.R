@@ -7,15 +7,19 @@
 #' [readLPJmL()]
 #' @examples
 #' \dontrun{
-#' readSource("LPJmL", convert = "onlycorrect")
+#' readSource("LPJmL", convert = TRUE)
 #' }
 #'
 #' @importFrom madrat toolConditionalReplace
 #'
 
-correctLPJmL <- function(x) { # nolint: object_name_linter.
+correctLPJmL <- function(x) {
 
+  ### check whether there are negatives (and if so give warning)
   x <- toolConditionalReplace(x, conditions = "<0", replaceby = 0)
+
+  ### do we want to check and correct for N/As?
+  # Jens?, Kristine?, Mike?
 
   return(x)
 }
