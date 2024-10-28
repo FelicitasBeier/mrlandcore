@@ -10,22 +10,17 @@
 #' readSource("LPJmL", convert = TRUE)
 #' }
 #'
-#' @importFrom madrat toolConditionalReplace
-#'
 
 correctLPJmL <- function(x) {
 
   ### check whether there are negatives (and if so give warning)
-  x <- toolConditionalReplace(x, conditions = "<0", replaceby = 0)
+  x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
 
-  ### do we want to check and correct for N/As?
+  ### do we want to check and correct N/As?
   # Jens?, Kristine?, Mike?
 
-  description <- "description" # To do: replace once getComment() works
-  unit <- "unit" # To do: replace once getComment() works
+  unit <- madrat::getFromComment(x, "unit")
 
   return(list(x = x,
-              description = description,
-              unit = unit,
-              isocountries = FALSE))
+              unit = unit))
 }
