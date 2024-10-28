@@ -89,7 +89,8 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
 
   x <- mstools::toolCoord2Isocoord(x)
 
-  return(list(x    = x,
+  return(list(x = x,
               description = description,
-              unit = unit))
+              unit = unit,
+              isocountries = FALSE))
 }

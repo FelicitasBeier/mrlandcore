@@ -26,5 +26,6 @@ correctLPJmL <- function(x) {
 
   return(list(x = x,
               description = description,
-              unit = unit))
+              unit = unit,
+              isocountries = FALSE))
 }
