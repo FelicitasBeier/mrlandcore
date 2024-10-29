@@ -22,5 +22,5 @@ readSource("LPJmL", convert = TRUE)
 [readLPJmL()]
 }
 \author{
-Kristine Karstens, Felicitas Beier
+Felicitas Beier, Kristine Karstens
 }
