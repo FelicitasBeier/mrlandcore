@@ -32,6 +32,12 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
   meta        <- lpjmlkit::read_meta(dataname)
   # extract unit from meta data
   unit        <- meta$unit
+  # check units
+  mapUnitsExp <- toolGetMapping("lpjmlUnits.csv", where = "mrlandcore")
+  expUnit     <- mapUnitsExp[mapUnitsExp$variable == gsub(".bin.json", "",
+                                                          gsub("./", "", dataname)), 2]
+  toolExpectTrue(unit == expUnit, "LPJmL unit is as expected",
+                 level = 0, falseStatus = "note")
 
   # extract grid information
   x$add_grid(gridname, silent = TRUE)
