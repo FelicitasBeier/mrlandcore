@@ -12,9 +12,6 @@
 #'
 #' @author Kristine Karstens, Felicitas Beier
 #'
-#' @importFrom madrat calcOutput readSource toolSubtypeSelect toolSplitSubtype
-#' @importFrom magclass dimSums getYears setYears
-#'
 #' @seealso
 #' [readLPJmL()]
 #' @examples
@@ -40,6 +37,8 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   # That would make the code easier and give the user more flexibility.
   # It could be then set to the default 1951, but then it would be the same for historical and scenario
 
+
+  ### Question (Kristine): Where will the subdata end up?
   cfg        <- toolLPJmLScenario(version = version, climatetype = climatetype, subtype = subtype)
   readinName <- paste(cfg$version, cfg$climatetype, cfg$subtype, sep = ":")
   readinHist <- gsub("ssp[0-9]{3}", "historical", readinName)
@@ -95,12 +94,12 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   # If we need a different unit, we can change it either here (after discussion with Jan)
   # or wherever the respective function is called.
 
-  if (grepl("gpp", "npp", "harvestc")) {
+  if (grepl("gpp|npp|harvestc", subtype)) {
     # Transformation from carbon to dry matter content
     # (from tC/ha to tDM/ha)
     x    <- x / 0.45
     unit <- "tDM/ha"
-  } else if (grepl("runoff")) {
+  } else if (grepl("runoff", subtype)) {
     # To Do (Feli): Decide whether this can be moved to mrwater
     # and if so: move it.
     # mrunoff is called in calcAvlWater. This function will be deprecated once mrwater is included in MAgPIE
@@ -117,7 +116,7 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
     x <- x * landArea
     # new unit
     unit <- "mio. m^3"
-  } else if (grepl("evap_lake")) {
+  } else if (grepl("evap_lake", subtype)) {
     # To Do (Feli): Decide whether this can be moved to mrwater
     # and if so: move it.
     # Note also: input_lake is now calculated from prec
