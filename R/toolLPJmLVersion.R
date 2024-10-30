@@ -13,6 +13,10 @@
 #' @export
 
 toolLPJmLVersion <- function(version, climatetype) {
+
+  ## To Do: to be deleted once new pipeline is ready.
+  ## This function is being replaced by toolLPJmLScenario and toolLPJmLHarmonization
+
   cfg <- NULL
 
   ##### DEFAULT CONFIG #####

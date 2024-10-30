@@ -13,7 +13,7 @@
 #' @importFrom madrat toolConditionalReplace
 #'
 
-correctLPJmLInputs_new <- function(x) { # nolint
+correctLPJmLInputs_new <- function(x) { # nolint : object_name_linter.
 
   x <- toolConditionalReplace(x, conditions = c("is.na()", "<0"), replaceby = 0)
 

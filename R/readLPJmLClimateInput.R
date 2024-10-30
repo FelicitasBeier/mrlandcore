@@ -25,7 +25,7 @@
 #' @importFrom magclass collapseNames collapseDim as.magpie clean_magpie
 #' @export
 
-readLPJmLClimateInput <- function(subset  = "annualMean", # nolint: object_name_linter.
+readLPJmLClimateInput <- function(subset  = "annualMean",
                                   subtype = "ISIMIP3bv2:MRI-ESM2-0:ssp370:temperature") {
 
   nCells  <- 67420 # number of cells in lpjml

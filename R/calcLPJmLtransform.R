@@ -30,27 +30,37 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
 
   ### Drafted please revise
   ### especially think if the year cutting can be done differently
+  # Thanks, Kristine! Works fine already!
+  # the if-condition with the "cut" is basically repeated code with a different year
+  # We could assign the year to an object instead in the if-condition (cutYr <- 1951)
+  # and then have the code outside the if. I drafted below as an example.
+  # Related to this: Why don't we cut historical and scenario in the same year?
+  # Alternatively, we could also leave it fully flexible
+  # (e.g. instead of cut selecting a specific start year there: smoothed:1951)
+  # That would make the code easier and give the user more flexibility.
+  # It could be then set to the default 1951, but then it would be the same for historical and scenario
 
   cfg        <- toolLPJmLScenario(version = version, climatetype = climatetype, subtype = subtype)
   readinName <- paste(cfg$version, cfg$climatetype, cfg$subtype, sep = ":")
   readinHist <- gsub("ssp[0-9]{3}", "historical", readinName)
 
   if (!grepl("historical", cfg$climatetype)) {
-
+    # select year for cutting of the time series
+    cutYr <- 1951
+    # read in LPJmL data from historical and scenario runs
     x     <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
                    readSource("LPJmL", subtype = readinName, convert = "onlycorrect"))
-    if (grepl("cut", stage)) {
-      years <- getYears(x, as.integer = TRUE)
-      x     <- x[, years[years >= 1951], ]
-    }
-
   } else {
-
+    # select year for cutting of the time series
+    cutYr <- 1930
+    # read in LPJmL data from historical run
     x     <- readSource("LPJmL", subtype = readinName, convert = "onlycorrect")
-    if (grepl("cut", stage)) {
-      years <- getYears(x, as.integer = TRUE)
-      x     <- x[, years[years >= 1930], ]
-    }
+  }
+
+  # shorten the time series
+  if (grepl("cut", stage)) {
+    years <- getYears(x, as.integer = TRUE)
+    x <- x[, years[years >= cutYr], ]
   }
 
   if (!is.null(subdata)) {
@@ -60,6 +70,13 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
     x <- x[, , subdata]
   }
   ########## CONFIGURE READ END ##########
+
+  ####### SUBTYPE - RUN MAPPING START #######
+  # To Do (discuss: Kristine, Mike, Feli, Jan):
+  # If I understood Jan correctly, he would like for the user only to select the LPJmL output subtype,
+  # not the respective run (pnv, crop, grass)
+  # I am a bit unsure since it gives us less flexibility and especially because of our special case cropsRf and cropsIr
+  ####### SUBTYPE - RUN MAPPING START #######
 
   ########## DATA TRANSFORMATION START ###############
   # The standard unit conversion (e.g., from gC/m^2 to tC/ha, from mm to m^3/ha)
@@ -86,6 +103,8 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   } else if (grepl("runoff")) {
     # To Do (Feli): Decide whether this can be moved to mrwater
     # and if so: move it.
+    # mrunoff is called in calcAvlWater. This function will be deprecated once mrwater is included in MAgPIE
+    # runoff is called in calcYearlyRunoff. This is part of new mrwater pipeline.
 
     ### Transformation to flow on land ###
     # Transformation factor: 1 m^3/ha = 1e-6 mio. m^3/ha
@@ -103,6 +122,8 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
     # and if so: move it.
     # Note also: input_lake is now calculated from prec
     # Probably better to do all of it in mrwater (calcRiverNaturalFlows)
+    # lake_evap is called in calcRiverNaturalFlows (part of new mrwater pipeline)
+    # input_lake is called in calcYearlyRunoff (part of new mrwater pipeline)
 
     ### Transformation to flow on water bodies ###
     # lake area from LPJmL (in m^2 already transformed to ha)
@@ -133,7 +154,7 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   ########## DATA TRANSFORMATION STOP ###############
 
   ########## STAGE HANDELING START  ###############
-  # To Do carify which calculation steps or test have to been done for the different stage arguments
+  # To Do carify which calculation steps or tests have to been done for the different stage arguments
   if (grepl("smoothed", stage)) {
     x <- toolSmooth(x)
   } else if (grepl("raw", stage)) {

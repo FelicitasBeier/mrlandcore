@@ -26,7 +26,7 @@
 #' @importFrom SPEI thornthwaite
 #'
 
-calcLPJmLClimateInput <- function(climatetype = "MRI-ESM2-0:ssp370", # nolint
+calcLPJmLClimateInput <- function(climatetype = "MRI-ESM2-0:ssp370",
                                   variable = "temperature:annualMean",
                                   stage = "harmonized2020",
                                   lpjmlVersion = "LPJmL4_for_MAgPIE_44ac93de") {

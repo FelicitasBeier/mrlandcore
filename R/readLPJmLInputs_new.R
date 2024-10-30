@@ -16,7 +16,7 @@
 #' @importFrom lpjclass readLPJ
 #' @importFrom magpiesets addLocation
 
-readLPJmLInputs_new <- function(subtype = "lakeshare") { # nolint
+readLPJmLInputs_new <- function(subtype = "lakeshare") { # nolint : object_name_linter.
 
   files <- c(lakeshare  = "glwd_lakes_and_rivers.bin")
   file  <- toolSubtypeSelect(subtype, files)

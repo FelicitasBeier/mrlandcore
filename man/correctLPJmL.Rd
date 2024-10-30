@@ -7,14 +7,15 @@
 correctLPJmL(x)
 }
 \arguments{
-\item{x}{magpie object provided by the read function}
+\item{x}{list of magpie object and unit provided by the read function}
 }
 \description{
-corrects data that was read in from LPJmL
+corrects data that was read in from LPJmL and converts units
+             to MAgPIE standard
 }
 \examples{
 \dontrun{
-readSource("LPJmL", convert = TRUE)
+readSource("LPJmL", convert = "onlycorrect")
 }
 
 }

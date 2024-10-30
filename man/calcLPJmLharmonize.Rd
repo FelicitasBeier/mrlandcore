@@ -17,9 +17,10 @@ calcLPJmLharmonize(
 
 \item{climatetype}{Switch between different climate scenarios}
 
-\item{subtype}{Switch between different lpjml input as specified in readLPJmL}
+\item{subtype}{Switch between different LPJmL output variables as specified in readLPJmL}
 
-\item{subdata}{Switch between data dimension subitems}
+\item{subdata}{Switch between data dimension subitems
+#### Kristine (To Do): explain switch better (maybe give examples). For me the use case wasn't clear.}
 
 \item{stage}{degree of processing: harmonizedHistorical (until reference year of historical data)
                       harmonizedScenario (until reference year for harmonized Scenarios)
@@ -33,7 +34,7 @@ Handle harmonization of LPJmL data
 }
 \examples{
 \dontrun{
-calcOutput("LPJmLharmonize", subtype = "soilc", aggregate = FALSE)
+calcOutput("LPJmLharmonize", subtype = "pnv:soilc", aggregate = FALSE)
 }
 }
 \seealso{
