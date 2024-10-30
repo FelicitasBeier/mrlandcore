@@ -147,8 +147,6 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   } else if (grepl("fpc", subtype)) {
     # To Do (Kristine and Jan): Discuss whether we want such renaming here
     unit <- "ha/ha"
-  } else {
-    stop(paste0("subtype ", subtype, " does not exist"))
   }
   ########## DATA TRANSFORMATION STOP ###############
 
