@@ -15,17 +15,20 @@
 correctLPJmL <- function(x) {
 
   # check and replace negative values
-  toolExpectTrue(x > 0, "Data provided by LPJmL is positive")
+  toolExpectTrue(all(x >= 0), "Data provided by LPJmL is positive", falseStatus = "warn")
   x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
 
+  ### To Do (discuss with Mike, Kristine): Do we want warning from these?
+  ### Do we want to replace N/A's and <0 with 0?
+
   # check and replace N/A's
-  toolExpectTrue(!is.na(x), "Data provided by LPJmL doesn't contain N/A's")
+  toolExpectTrue(all(!is.na(x)), "Data provided by LPJmL doesn't contain N/A's", falseStatus = "warn")
   x <- toolConditionalReplace(x, conditions = c("is.na()"), replaceby = 0)
 
   # extract unit of data
   unit <- madrat::getFromComment(x, "unit")
 
-  ### To Do (Kristine): please doubl-check unit conversion below
+  ### To Do (Kristine): please double-check unit conversion below
 
   # unit conversion
   if (grepl("gC/m2", unit)) {
