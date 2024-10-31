@@ -48,6 +48,8 @@ calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
 
   } else if (stage == "harmonizedScenario") {
     # read in historical data for subtype
+    #### Kristine: something is wrong here: should this be a LPJmLharmonize call
+    ###            or should the stage not be harmonized?
     baselineScen    <- calcOutput("LPJmLtransform", version = cfg$baselineVersion,
                                   climatetype = cfg$baselineGcm, subtype = subtype,
                                   subdata = subdata, stage = "harmonized",

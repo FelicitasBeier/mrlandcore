@@ -103,45 +103,6 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
     # (from tC/ha to tDM/ha)
     x    <- x / 0.45
     unit <- "tDM/ha"
-  } else if (grepl("runoff", subtype)) {
-    # To Do (Feli): Decide whether this can be moved to mrwater
-    # and if so: move it.
-    # mrunoff is called in calcAvlWater. This function will be deprecated once mrwater is included in MAgPIE
-    # runoff is called in calcYearlyRunoff. This is part of new mrwater pipeline.
-
-    ### Transformation to flow on land ###
-    # Transformation factor: 1 m^3/ha = 1e-6 mio. m^3/ha
-    # Transformation factor: 1 Mha    = 1e+6 ha
-    # landarea (in Mha)
-    landArea <- setYears(collapseNames(dimSums(readSource("LUH2v2",
-                                                          subtype = "states",
-                                                          convert = "onlycorrect")[, "y1995", ],
-                                               dim = 3)), NULL)
-    x <- x * landArea
-    # new unit
-    unit <- "mio. m^3"
-  } else if (grepl("evap_lake", subtype)) {
-    # To Do (Feli): Decide whether this can be moved to mrwater
-    # and if so: move it.
-    # Note also: input_lake is now calculated from prec
-    # Probably better to do all of it in mrwater (calcRiverNaturalFlows)
-    # lake_evap is called in calcRiverNaturalFlows (part of new mrwater pipeline)
-    # input_lake is called in calcYearlyRunoff (part of new mrwater pipeline)
-
-    ### Transformation to flow on water bodies ###
-    # lake area from LPJmL (in m^2 already transformed to ha)
-    # To Do (Feli): replace with LUH2v2 lake area
-    # Question (Jens): looks like LUH2v2 lake area includes ice?
-    # Question (Kristine, Pascal): how would I extract lake area from LUH2v2?
-    # should we do it during the LUH update?
-    lakeArea <- readSource("LPJmL", subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:lake_area")
-    # transform from m^3/ha to mio. m^3
-    x <- x * lakeArea * 1e-6
-    # transform to yearly value
-    x <- dimSums(x, dim = "month")
-    ### Question (Jens): I don't think that we need this input at a monthly scale.
-    ### Do I overlook something? If not: can we get it as yearly output instead?
-    unit <- "mio. m^3"
   } else if (grepl("*date*", subtype)) {
     # To Do (Kristine and Jan): Discuss whether we want such renaming here
     unit <- "day of the year"

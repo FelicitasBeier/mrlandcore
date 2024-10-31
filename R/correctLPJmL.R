@@ -15,7 +15,7 @@
 correctLPJmL <- function(x) {
 
   # check and replace negative values
-  toolExpectTrue(all(x >= 0), "Data provided by LPJmL is positive", falseStatus = "warn")
+  toolExpectTrue(all(x >= 1e-10), "Data provided by LPJmL is not negative", falseStatus = "warn")
   x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
 
   ### To Do (discuss with Mike, Kristine): Do we want warning from these?
