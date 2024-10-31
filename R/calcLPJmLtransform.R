@@ -68,6 +68,7 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
     }
     x <- x[, , subdata]
   }
+  unit <- madrat::getFromComment(x, "unit")
   ########## CONFIGURE READ END ##########
 
   ####### SUBTYPE - RUN MAPPING START #######
