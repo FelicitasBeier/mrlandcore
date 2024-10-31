@@ -43,17 +43,21 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   readinName <- paste(cfg$version, cfg$climatetype, cfg$subtype, sep = ":")
   readinHist <- gsub("ssp[0-9]{3}", "historical", readinName)
 
+  # read in LPJmL data from selected run (historical or scenario)
+  x <- readSource("LPJmL", subtype = readinName, convert = "onlycorrect")
+  unit <- madrat::getFromComment(x, "unit")
+  ### Jan, Kristine: I had to pull this out of the if because mbind() was dropping the unit information
+  # Also it avoids one repeated line. If you know a better solution also fine with me.
+
   if (!grepl("historical", cfg$climatetype)) {
     # select year for cutting of the time series
     cutYr <- 1951
-    # read in LPJmL data from historical and scenario runs
+    # read in LPJmL data from historical run and combine with scenario run
     x     <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
-                   readSource("LPJmL", subtype = readinName, convert = "onlycorrect"))
+                   x)
   } else {
     # select year for cutting of the time series
     cutYr <- 1930
-    # read in LPJmL data from historical run
-    x     <- readSource("LPJmL", subtype = readinName, convert = "onlycorrect")
   }
 
   # shorten the time series
@@ -68,7 +72,6 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
     }
     x <- x[, , subdata]
   }
-  unit <- madrat::getFromComment(x, "unit")
   ########## CONFIGURE READ END ##########
 
   ####### SUBTYPE - RUN MAPPING START #######
