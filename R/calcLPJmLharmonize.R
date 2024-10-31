@@ -32,7 +32,7 @@ calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
 
   if (stage == "harmonizedHistorical") {
     # read in historical data for subtype
-    baseline        <- calcOutput("LPJmLtransformed", version = cfg$baselineVersion,
+    baseline        <- calcOutput("LPJmLtransform", version = cfg$baselineVersion,
                                   climatetype = cfg$baselineHist, subtype = subtype,
                                   subdata = subdata, stage = "smoothed",
                                   aggregate = FALSE, supplementary = TRUE)
@@ -41,14 +41,14 @@ calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
     baseline        <- baseline$x
 
     # read in future scenario data for subtype
-    x   <- calcOutput("LPJmLtransformed", version = cfg$readinVersion,
+    x   <- calcOutput("LPJmLtransform", version = cfg$readinVersion,
                       climatetype = cfg$climatetype, subtype = subtype,
                       subdata = subdata, stage = "smoothed", aggregate = FALSE)
     out <- toolHarmonize2Baseline(x, baseline, ref_year = cfg$refYearHist)
 
   } else if (stage == "harmonizedScenario") {
     # read in historical data for subtype
-    baselineScen    <- calcOutput("LPJmLtransformed", version = cfg$baselineVersion,
+    baselineScen    <- calcOutput("LPJmLtransform", version = cfg$baselineVersion,
                                   climatetype = cfg$baselineGcm, subtype = subtype,
                                   subdata = subdata, stage = "harmonized",
                                   aggregate = FALSE, supplementary = TRUE)
@@ -71,7 +71,7 @@ calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
       ####           Why is the distinction necessary?
 
       # read in future scenario data for subtype
-      x   <- calcOutput("LPJmLtransformed", version = cfg$readinVersion,
+      x   <- calcOutput("LPJmLtransform", version = cfg$readinVersion,
                         climatetype = cfg$climatetype, subtype = subtype,
                         subdata = subdata, stage = "smoothed", aggregate = FALSE)
       out <- toolHarmonize2Baseline(x, baselineScen, ref_year = cfg$refYearGcm)
