@@ -30,6 +30,8 @@ calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
   # Create settings for LPJmL from version and climatetype argument
   cfg <- toolLPJmLHarmonization(version = version, climatetype = climatetype)
 
+  ### Question: calcLPJmLharmonize is very slow. Can we do anything to improve the performance?
+
   if (stage == "harmonizedHistorical") {
     # read in historical data for subtype
     baseline        <- calcOutput("LPJmLtransform", version = cfg$baselineVersion,

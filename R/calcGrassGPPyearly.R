@@ -11,7 +11,7 @@
 #'                                    period of LPJmL (main season)
 #'
 #' @return magpie object in cellular resolution
-#' @author Felicitas Beier
+#' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
 #' \dontrun{
@@ -24,46 +24,49 @@
 
 calcGrassGPP <- function(selectyears, lpjml, climatetype, season) {
 
+  ### Question (Kristine): What's the difference between "harmonizedHistorical"
+  ### and "harmonizedScenario"? When to use what? And do I even need the distinction here?
+  ### Preferrably, I would just like to select the climatetype (and harmonized)
+  ### and not have to care for the stage...
   if (grepl("historical", climatetype)) {
-    stage <- "smoothed"
+    stage <- "smoothed" # maybe: harmonizedHistorical
   } else {
-    stage <- "harmonized2020"
+    stage <- "harmonizedHistorical" # maybe: harmonizedScenario
   }
 
   ####################
   ### Read in data ###
   ####################
+  # Monthly grass GPP
+  monthlyRainfed <- calcOutput("calcGrassGPPmonthly",
+                               selectyears = selectyears,
+                               lpjml = lpjml, climatetype = climatetype,
+                               aggregate = FALSE)[, , "rainfed"]
 
-  # monthly irrigated grass GPP (in tDM/ha)
-  monthlyIrrigated <- calcOutput("LPJmL_new", subtype = "mgpp_grass_ir",
-                                 years = selectyears,
-                                 stage = stage,
-                                 version = lpjml[["crop"]], climatetype = climatetype,
-                                 aggregate = FALSE)
-  # monthly irrigated grass GPP (in tDM/ha)
-  monthlyRainfed <- calcOutput("LPJmL_new", subtype = "mgpp_grass_rf",
-                               years = selectyears,
-                               stage = stage,
-                               version = lpjml[["crop"]], climatetype = climatetype,
-                               aggregate = FALSE)
+  monthlyIrrigated <- calcOutput("calcGrassGPPmonthly",
+                                 selectyears = selectyears,
+                                 lpjml = lpjml, climatetype = climatetype,
+                                 aggregate = FALSE)[, , "irrigated"]
+
+  # To Do: update once new LPJmL data is there (with rainfed run and irrigated run)
 
   # irrigated grass GPP in irrigated growing period of crop (in tDM/ha)
-  grperIrrigated <- calcOutput("LPJmL_new", subtype = "cft_gpp_grass_ir",
-                               years = selectyears,
-                               stage = stage,
-                               version = lpjml[["crop"]], climatetype = climatetype,
+  # Jens: this will come from cropsIR run in the future, right?
+  grperIrrigated <- calcOutput("LPJmLharmonize", subtype = "crops:cft_gpp_grass_ir",
+                               years = selectyears, stage = stage,
+                               version = lpjml, climatetype = climatetype,
                                aggregate = FALSE)
+
   # rainfed grass GPP in rainfed growing period of crop (in tDM/ha)
-  grperRainfed <- calcOutput("LPJmL_new", subtype = "cft_gpp_grass_rf",
-                             years = selectyears,
-                             stage = stage,
-                             version = lpjml[["crop"]], climatetype = climatetype,
+  # Jens: this will come from cropsRF run in the future, right?
+  grperRainfed <- calcOutput("LPJmLharmonize", subtype = "crops:cft_gpp_grass_rf",
+                             years = selectyears, stage = stage,
+                             version = lpjml, climatetype = climatetype,
                              aggregate = FALSE)
 
   ########################
   ### Data preparation ###
   ########################
-
   # Empty objects to be filled
   grassGPPannual <- grassGPPgrper <- new.magpie(cells_and_regions = getItems(grperIrrigated, dim = 1),
                                                 years = getItems(grperIrrigated, dim = 2),
@@ -78,22 +81,11 @@ calcGrassGPP <- function(selectyears, lpjml, climatetype, season) {
   # Extract irrigated grass GPP in irrigated growing period of crop
   grassGPPgrper[, , "irrigated"] <- grperIrrigated[, , "irrigated"]
 
-
-  ####################
-  ### Calculations ###
-  ####################
-
-  # Monthly grass GPP
-  monthlyRainfed   <- add_dimension(monthlyRainfed,
-                                    add = "irrigation", nm = "rainfed")
-  monthlyIrrigated <- add_dimension(monthlyIrrigated,
-                                    add = "irrigation", nm = "irrigated")
-
   ##############
   ### Return ###
   ##############
   unit        <- "tDM per ha"
-  description <- "irrigated and rainfed gross primary production of grass"
+  description <- "irrigated and rainfed gross primary production (GPP) of grass"
 
   if (season == "mainSeason") {
 
@@ -118,12 +110,6 @@ calcGrassGPP <- function(selectyears, lpjml, climatetype, season) {
 
     out         <- grassGPPannual
     description <- paste0(description, " in the entire year (when crop growth is possible)")
-
-  } else if (season == "monthly") {
-
-    out                  <- mbind(monthlyRainfed, monthlyIrrigated)
-    getSets(out)["d3.2"] <- "month"
-    description          <- paste0(description, " per month")
 
   } else {
     stop("Please specify output to be returned by function calcGrassGPP:
