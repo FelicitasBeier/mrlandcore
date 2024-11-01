@@ -23,7 +23,7 @@ Calculates monthly gross primary production (GPP) of grassland
 }
 \examples{
 \dontrun{
-calcOutput("GrassGPP", aggregate = FALSE)
+calcOutput("GrassGPPmonthly", aggregate = FALSE)
 }
 
 }

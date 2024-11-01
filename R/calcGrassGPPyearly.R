@@ -1,4 +1,4 @@
-#' @title calcGrassGPP
+#' @title calcGrassGPPyearly
 #'
 #' @description Calculates gross primary production (GPP) of grassland
 #'              under irrigated and rainfed conditions based on LPJmL inputs.
@@ -15,14 +15,14 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("GrassGPP", aggregate = FALSE)
+#' calcOutput("GrassGPPyearly", aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums getItems new.magpie getSets add_dimension
 #'
 
-calcGrassGPP <- function(selectyears, lpjml, climatetype, season) {
+calcGrassGPPyearly <- function(selectyears, lpjml, climatetype, season) {
 
   ### Question (Kristine): What's the difference between "harmonizedHistorical"
   ### and "harmonizedScenario"? When to use what? And do I even need the distinction here?

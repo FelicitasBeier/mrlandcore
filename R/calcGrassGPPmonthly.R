@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("GrassGPP", aggregate = FALSE)
+#' calcOutput("GrassGPPmonthly", aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput
