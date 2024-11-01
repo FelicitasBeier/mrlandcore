@@ -49,15 +49,17 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   ### Jan, Kristine: I had to pull this out of the if because mbind() was dropping the unit information
   # Also it avoids one repeated line. If you know a better solution also fine with me.
 
-  if (!grepl("historical", cfg$climatetype)) {
-    # select year for cutting of the time series
-    cutYr <- 1951
-    # read in LPJmL data from historical run and combine with scenario run
-    x     <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
-                   x)
-  } else {
-    # select year for cutting of the time series
-    cutYr <- 1930
+  if (!is.null(getItems(x, dim = 2))) {
+    if (!grepl("historical", cfg$climatetype)) {
+      # select year for cutting of the time series
+      cutYr <- 1951
+      # read in LPJmL data from historical run and combine with scenario run
+      x <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
+                 x)
+    } else {
+      # select year for cutting of the time series
+      cutYr <- 1930
+    }
   }
 
   # shorten the time series
