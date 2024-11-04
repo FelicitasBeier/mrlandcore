@@ -70,7 +70,8 @@ calcGrassGPPyearly <- function(selectyears, lpjml, climatetype, season) {
   # Empty objects to be filled
   grassGPPannual <- grassGPPgrper <- new.magpie(cells_and_regions = getItems(grperIrrigated, dim = 1),
                                                 years = getItems(grperIrrigated, dim = 2),
-                                                names = getItems(grperIrrigated, dim = 3),
+                                                names = c(getItems(grperIrrigated, dim = 3),
+                                                          getItems(grperRainfed, dim = 3)),
                                                 fill = NA)
   # Name dimensions
   getSets(grassGPPannual) <- c("x", "y", "iso", "year", "crop", "irrigation")
@@ -112,8 +113,8 @@ calcGrassGPPyearly <- function(selectyears, lpjml, climatetype, season) {
     description <- paste0(description, " in the entire year (when crop growth is possible)")
 
   } else {
-    stop("Please specify output to be returned by function calcGrassGPP:
-         mainSeason or wholeYear or monthly")
+    stop("Please specify output to be returned by function calcGrassGPPyearly:
+         mainSeason or wholeYear")
   }
 
   ##############
