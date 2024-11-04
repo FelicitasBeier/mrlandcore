@@ -4,7 +4,10 @@
 #' @param version Switch between LPJmL versions (including addons for further version specification)
 #' @param climatetype Switch between different climate scenarios (climatemodel:climatescenario)
 #' @param subtype Switch between different lpjml input (runtype:filename)
-#' @param subdata Switch between data dimension subitems
+#' @param subdata Selection of subitems of object.
+#'                This argument can be used to split up the data in smaller objects
+#'                where only a sub-set of the data is needed or
+#'                for better handling where otherwise memory issues would occur due to the object size.
 #' @param stage Degree of processing: raw:cut, smoothed:cut           - raw or smoothed data from 1930|1951
 #'                                    raw:fullhist, smoothed:fullhist - raw or smoothed data with full history
 #'

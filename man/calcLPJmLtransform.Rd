@@ -19,7 +19,10 @@ calcLPJmLtransform(
 
 \item{subtype}{Switch between different lpjml input (runtype:filename)}
 
-\item{subdata}{Switch between data dimension subitems}
+\item{subdata}{Selection of subitems of object.
+This argument can be used to split up the data in smaller objects
+where only a sub-set of the data is needed or
+for better handling where otherwise memory issues would occur due to the object size.}
 
 \item{stage}{Degree of processing: raw:cut, smoothed:cut           - raw or smoothed data from 1930|1951
 raw:fullhist, smoothed:fullhist - raw or smoothed data with full history}

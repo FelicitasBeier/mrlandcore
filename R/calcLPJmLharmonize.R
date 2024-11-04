@@ -4,8 +4,10 @@
 #' @param version Switch between LPJmL versions (including addons for further version specification)
 #' @param climatetype Switch between different climate scenarios
 #' @param subtype Switch between different LPJmL output variables as specified in readLPJmL
-#' @param subdata Switch between data dimension subitems
-#' #### Kristine (To Do): explain switch better (maybe give examples). For me the use case wasn't clear.
+#' @param subdata Selection of subitems of object.
+#'                This argument can be used to split up the data in smaller objects
+#'                where only a sub-set of the data is needed or
+#'                for better handling where otherwise memory issues would occur due to the object size.
 #' @param stage degree of processing: harmonizedHistorical (until reference year of historical data)
 #'                                    harmonizedScenario (until reference year for harmonized Scenarios)
 #'              See toolLPJmLHarmonization for current settings.
@@ -27,6 +29,10 @@ calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
                                climatetype = "MRI-ESM2-0:ssp370",
                                subtype     = "pnv:soilc", subdata = NULL,
                                stage       = "harmonizedScenario") {
+  #### To Do: get rid of stage argument!
+  #### Whenever historical: only smooth, whenever future scenario: harmonize
+  ## Extract argument information
+
   # Create settings for LPJmL from version and climatetype argument
   cfg <- toolLPJmLHarmonization(version = version, climatetype = climatetype)
 
@@ -51,10 +57,10 @@ calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
   } else if (stage == "harmonizedScenario") {
     # read in historical data for subtype
     #### Kristine: something is wrong here: should this be a LPJmLharmonize call
-    ###            or should the stage not be harmonized?
-    baselineScen    <- calcOutput("LPJmLtransform", version = cfg$baselineVersion,
+    ### or should the stage not be harmonized?
+    baselineScen    <- calcOutput("LPJmLharmonize", version = cfg$baselineVersion,
                                   climatetype = cfg$baselineGcm, subtype = subtype,
-                                  subdata = subdata, stage = "harmonized",
+                                  subdata = subdata, stage = "harmonizedHistorical",
                                   aggregate = FALSE, supplementary = TRUE)
 
     unit            <- baselineScen$unit

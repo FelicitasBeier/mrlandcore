@@ -19,8 +19,10 @@ calcLPJmLharmonize(
 
 \item{subtype}{Switch between different LPJmL output variables as specified in readLPJmL}
 
-\item{subdata}{Switch between data dimension subitems
-#### Kristine (To Do): explain switch better (maybe give examples). For me the use case wasn't clear.}
+\item{subdata}{Selection of subitems of object.
+This argument can be used to split up the data in smaller objects
+where only a sub-set of the data is needed or
+for better handling where otherwise memory issues would occur due to the object size.}
 
 \item{stage}{degree of processing: harmonizedHistorical (until reference year of historical data)
                       harmonizedScenario (until reference year for harmonized Scenarios)

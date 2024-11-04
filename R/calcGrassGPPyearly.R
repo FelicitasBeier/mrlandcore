@@ -38,12 +38,12 @@ calcGrassGPPyearly <- function(selectyears, lpjml, climatetype, season) {
   ### Read in data ###
   ####################
   # Monthly grass GPP
-  monthlyRainfed <- calcOutput("calcGrassGPPmonthly",
+  monthlyRainfed <- calcOutput("GrassGPPmonthly",
                                selectyears = selectyears,
                                lpjml = lpjml, climatetype = climatetype,
                                aggregate = FALSE)[, , "rainfed"]
 
-  monthlyIrrigated <- calcOutput("calcGrassGPPmonthly",
+  monthlyIrrigated <- calcOutput("GrassGPPmonthly",
                                  selectyears = selectyears,
                                  lpjml = lpjml, climatetype = climatetype,
                                  aggregate = FALSE)[, , "irrigated"]
@@ -52,17 +52,17 @@ calcGrassGPPyearly <- function(selectyears, lpjml, climatetype, season) {
 
   # irrigated grass GPP in irrigated growing period of crop (in tDM/ha)
   # Jens: this will come from cropsIR run in the future, right?
-  grperIrrigated <- calcOutput("LPJmLharmonize", subtype = "crops:cft_gpp_grass_ir",
+  grperIrrigated <- calcOutput("LPJmLharmonize", subtype = "crops:cft_gpp_grass",
                                years = selectyears, stage = stage,
                                version = lpjml, climatetype = climatetype,
-                               aggregate = FALSE)
+                               aggregate = FALSE)[, , "irrigated"]
 
   # rainfed grass GPP in rainfed growing period of crop (in tDM/ha)
   # Jens: this will come from cropsRF run in the future, right?
-  grperRainfed <- calcOutput("LPJmLharmonize", subtype = "crops:cft_gpp_grass_rf",
+  grperRainfed <- calcOutput("LPJmLharmonize", subtype = "crops:cft_gpp_grass",
                              years = selectyears, stage = stage,
                              version = lpjml, climatetype = climatetype,
-                             aggregate = FALSE)
+                             aggregate = FALSE)[, , "rainfed"]
 
   ########################
   ### Data preparation ###
