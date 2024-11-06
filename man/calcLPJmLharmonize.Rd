@@ -8,8 +8,7 @@ calcLPJmLharmonize(
   version = "lpjml5.9.5-m1",
   climatetype = "MRI-ESM2-0:ssp370",
   subtype = "pnv:soilc",
-  subdata = NULL,
-  stage = "harmonizedScenario"
+  subdata = NULL
 )
 }
 \arguments{
@@ -23,10 +22,6 @@ calcLPJmLharmonize(
 This argument can be used to split up the data in smaller objects
 where only a sub-set of the data is needed or
 for better handling where otherwise memory issues would occur due to the object size.}
-
-\item{stage}{degree of processing: harmonizedHistorical (until reference year of historical data)
-                      harmonizedScenario (until reference year for harmonized Scenarios)
-See toolLPJmLHarmonization for current settings.}
 }
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.
