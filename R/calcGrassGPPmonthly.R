@@ -21,16 +21,6 @@
 
 calcGrassGPPmonthly <- function(selectyears, lpjml, climatetype) {
 
-  ### Question (Kristine): What's the difference between "harmonizedHistorical"
-  ### and "harmonizedScenario"? When to use what? And do I even need the distinction here?
-  ### Preferrably, I would just like to select the climatetype (and harmonized)
-  ### and not have to care for the stage...
-  if (grepl("historical", climatetype)) {
-    stage <- "smoothed" # maybe: harmonizedHistorical
-  } else {
-    stage <- "harmonizedHistorical" # maybe: harmonizedScenario
-  }
-
   ####################
   ### Read in data ###
   ####################
@@ -43,7 +33,7 @@ calcGrassGPPmonthly <- function(selectyears, lpjml, climatetype) {
   # To Do (Feli): adjust runfolder once new runs ready
   # Jens: this would be from irrigated run (cropsIr) in the future, right?
   monthlyIrrigated <- calcOutput("LPJmLharmonize", subtype = "crops:gpp_grass_ir",
-                                 years = selectyears, stage = stage,
+                                 years = selectyears,
                                  version = lpjml, climatetype = climatetype,
                                  aggregate = FALSE)
 
@@ -51,7 +41,7 @@ calcGrassGPPmonthly <- function(selectyears, lpjml, climatetype) {
   # To Do (Feli): adjust runfolder once new runs ready
   # Jens: this would be from rainfed run (cropsRf) in the future, right?
   monthlyRainfed <- calcOutput("LPJmLharmonize", subtype = "crops:gpp_grass_rf",
-                               years = selectyears, stage = stage,
+                               years = selectyears,
                                version = lpjml, climatetype = climatetype,
                                aggregate = FALSE)
 
