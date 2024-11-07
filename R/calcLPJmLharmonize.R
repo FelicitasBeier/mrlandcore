@@ -1,9 +1,9 @@
 #' @title calcLPJmLharmonize
 #' @description Handle harmonization of LPJmL data
 #'
-#' @param version Switch between LPJmL versions (including addons for further version specification)
-#' @param climatetype Switch between different climate scenarios
-#' @param subtype Switch between different LPJmL output variables as specified in readLPJmL
+#' @param lpjmlversion Switch between LPJmL versions (including addons for further version specification)
+#' @param climatetype  Switch between different climate scenarios
+#' @param subtype      Switch between different LPJmL output variables as specified in readLPJmL
 #' @param subdata Selection of subitems of object.
 #'                This argument can be used to split up the data in smaller objects
 #'                where only a sub-set of the data is needed or
@@ -22,9 +22,11 @@
 #' \dontrun{
 #' calcOutput("LPJmLharmonize", subtype = "pnv:soilc", aggregate = FALSE)
 #' }
-calcLPJmLharmonize <- function(version     = "lpjml5.9.5-m1", # nolint
+
+calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
                                climatetype = "MRI-ESM2-0:ssp370",
-                               subtype     = "pnv:soilc", subdata = NULL) {
+                               subtype = "pnv:soilc", subdata = NULL) {
+
   ### Question (Jan): calcLPJmLharmonize is very slow. Can we do anything to improve the performance?
 
   # Extract settings for LPJmL from version and climatetype argument

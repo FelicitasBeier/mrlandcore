@@ -1,9 +1,9 @@
 #' @title calcLPJmLtransform
 #' @description Transform LPJmL data in units and variables used by magpie
 #'
-#' @param version Switch between LPJmL versions (including addons for further version specification)
-#' @param climatetype Switch between different climate scenarios (climatemodel:climatescenario)
-#' @param subtype Switch between different lpjml input (runtype:filename)
+#' @param lpjmlversion Switch between LPJmL versions (including addons for further version specification)
+#' @param climatetype  Switch between different climate scenarios (climatemodel:climatescenario)
+#' @param subtype      Switch between different lpjml input (runtype:filename)
 #' @param subdata Selection of subitems of object.
 #'                This argument can be used to split up the data in smaller objects
 #'                where only a sub-set of the data is needed or
@@ -22,26 +22,12 @@
 #' calcOutput("LPJmLtransform", subtype = "pnv:soilc", aggregate = FALSE)
 #' }
 #'
-calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
+calcLPJmLtransform <- function(lpjmlversion = "lpjml5.9.5-m1",
                                climatetype = "MRI-ESM2-0:ssp370",
                                subtype     = "pnv:soilc", subdata = NULL,
                                stage       = "smoothed:cut") {
+
   ########## CONFIGURE READ START ##########
-
-  ### Drafted please revise
-  ### especially think if the year cutting can be done differently
-  # Thanks, Kristine! Works fine already!
-  # the if-condition with the "cut" is basically repeated code with a different year
-  # We could assign the year to an object instead in the if-condition (cutYr <- 1951)
-  # and then have the code outside the if. I drafted below as an example.
-  # Related to this: Why don't we cut historical and scenario in the same year?
-  # Alternatively, we could also leave it fully flexible
-  # (e.g. instead of cut selecting a specific start year there: smoothed:1951)
-  # That would make the code easier and give the user more flexibility.
-  # It could be then set to the default 1951, but then it would be the same for historical and scenario
-
-
-  ### Question (Kristine): Where will the subdata end up?
   cfg        <- toolLPJmLScenario(version = version, climatetype = climatetype, subtype = subtype)
   readinName <- paste(cfg$version, cfg$climatetype, cfg$subtype, sep = ":")
   readinHist <- gsub("ssp[0-9]{3}", "historical", readinName)
@@ -49,8 +35,6 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   # read in LPJmL data from selected run (historical or scenario)
   x <- readSource("LPJmL", subtype = readinName, convert = "onlycorrect")
   unit <- madrat::getFromComment(x, "unit")
-  ### Jan, Kristine: I had to pull this out of the if because mbind() was dropping the unit information
-  # Also it avoids one repeated line. If you know a better solution also fine with me.
 
   if (!is.null(getItems(x, dim = 2))) {
     if (!grepl("historical", cfg$climatetype)) {
@@ -98,35 +82,20 @@ calcLPJmLtransform <- function(version     = "lpjml5.9.5-m1", # nolint
   # If any of these is supposed to be in tDM/ha, please add in the if below!
   # (1.2) m^3/ha: pet is transformed as all other water inputs (from mm to m^3/ha).
   # If you want a different unit, please add if below, but start with m^3/ha for transformation
-  # (2) Jan was against units like "ha/ha", "days of the year", "shr"
-  # For now all "" units in LPJmL got renamed to "1".
-  # If we need a different unit, we can change it either here (after discussion with Jan)
-  # or wherever the respective function is called.
 
   if (grepl("gpp|npp|harvestc", subtype)) {
     # Transformation from carbon to dry matter content
     # (from tC/ha to tDM/ha)
     x    <- x / 0.45
     unit <- "tDM/ha"
-  } else if (grepl("*date*", subtype)) {
-    # To Do (Kristine and Jan): Discuss whether we want such renaming here
-    unit <- "day of the year"
-  } else if (grepl("cshift", subtype)) {
-    # To Do (Kristine and Jan): Discuss whether we want such renaming here
-    unit <- "C/C"
-  } else if (grepl("fpc", subtype)) {
-    # To Do (Kristine and Jan): Discuss whether we want such renaming here
-    unit <- "ha/ha"
   }
   ########## DATA TRANSFORMATION STOP ###############
 
   ########## STAGE HANDELING START  ###############
-  # To Do carify which calculation steps or tests have to been done for the different stage arguments
   if (grepl("smoothed", stage)) {
     x <- toolSmooth(x)
   } else if (grepl("raw", stage)) {
-    # unclear if checks are needed? I don't think so: should be covered in correctLPJmL already, right?
-    # To Do (discuss with Kristine, Mike, Feli, maybe Jan)
+    # nothing needs to be done
   } else {
     stop("Stage argument not supported!")
   }

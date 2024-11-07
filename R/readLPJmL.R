@@ -37,7 +37,7 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
   expUnit     <- mapUnitsExp[mapUnitsExp$variable == gsub(".bin.json", "",
                                                           gsub("./", "", dataname)), 2]
   toolExpectTrue(unit == expUnit, "LPJmL unit is as expected",
-                 level = 0, falseStatus = "note")
+                 level = 0, falseStatus = "warn")
 
   # extract grid information
   x$add_grid(gridname, silent = TRUE)

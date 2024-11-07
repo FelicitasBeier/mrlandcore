@@ -5,7 +5,7 @@
 \title{calcLPJmLtransform}
 \usage{
 calcLPJmLtransform(
-  version = "lpjml5.9.5-m1",
+  lpjmlversion = "lpjml5.9.5-m1",
   climatetype = "MRI-ESM2-0:ssp370",
   subtype = "pnv:soilc",
   subdata = NULL,
@@ -13,7 +13,7 @@ calcLPJmLtransform(
 )
 }
 \arguments{
-\item{version}{Switch between LPJmL versions (including addons for further version specification)}
+\item{lpjmlversion}{Switch between LPJmL versions (including addons for further version specification)}
 
 \item{climatetype}{Switch between different climate scenarios (climatemodel:climatescenario)}
 
