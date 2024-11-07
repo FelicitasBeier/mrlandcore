@@ -1,6 +1,6 @@
 # One-line description of this awesome package
 
-R package **mrlandcore**, version **1.2.0.9019**
+R package **mrlandcore**, version **1.2.0.9020**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/mrlandcore)](https://cran.r-project.org/package=mrlandcore)  [![R build status](https://github.com/pik-piam/mrlandcore/workflows/check/badge.svg)](https://github.com/pik-piam/mrlandcore/actions) [![codecov](https://codecov.io/gh/pik-piam/mrlandcore/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mrlandcore) [![r-universe](https://pik-piam.r-universe.dev/badges/mrlandcore)](https://pik-piam.r-universe.dev/builds)
 
@@ -47,7 +47,7 @@ A BibTeX entry for LaTeX users is
   title = {mrlandcore: One-line description of this awesome package},
   author = {Felicitas Beier and Kristine Karstens and Marcos Alves and Jan {Philipp Dietrich} and Benjamin {Leon Bodirsky} and David Hoetten and Florian Humpenoeder and Jens Heinke and Patrick {v. Jeetze} and Abhijeet Mishra and Felcitas Beier and Stephen Wirth and David Chen and Ulrich Kreidenweis},
   year = {2024},
-  note = {R package version 1.2.0.9019},
+  note = {R package version 1.2.0.9020},
   url = {https://github.com/pik-piam/mrlandcore},
 }
 ```

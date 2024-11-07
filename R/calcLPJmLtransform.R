@@ -28,7 +28,9 @@ calcLPJmLtransform <- function(lpjmlversion = "lpjml5.9.5-m1",
                                stage       = "smoothed:cut") {
 
   ########## CONFIGURE READ START ##########
-  cfg        <- toolLPJmLScenario(version = version, climatetype = climatetype, subtype = subtype)
+  cfg        <- toolLPJmLScenario(lpjmlversion = lpjmlversion,
+                                  climatetype = climatetype,
+                                  subtype = subtype)
   readinName <- paste(cfg$version, cfg$climatetype, cfg$subtype, sep = ":")
   readinHist <- gsub("ssp[0-9]{3}", "historical", readinName)
 
@@ -106,6 +108,6 @@ calcLPJmLtransform <- function(lpjmlversion = "lpjml5.9.5-m1",
               unit         = unit,
               min          = 0,
               description  = paste0("Output from LPJmL (", subtype, ") for ",
-                                    version, " and ", climatetype, " at stage: ", stage, "."),
+                                    lpjmlversion, " and ", climatetype, " at stage: ", stage, "."),
               isocountries = FALSE))
 }

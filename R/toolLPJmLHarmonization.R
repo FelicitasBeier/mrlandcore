@@ -2,8 +2,8 @@
 #'
 #' @description Specify default settings for LPJmL version and baseline settings
 #'
-#' @param version Switch between LPJmL versions (including add-ons (+*) for further version specification)
-#' @param climatetype Switch between different climate scenarios
+#' @param lpjmlversion Switch between LPJmL versions (including add-ons (+*) for further version specification)
+#' @param climatetype  Switch between different climate scenarios
 #'
 #' @return configuration as list
 #' @author Kristine Karstens
@@ -12,7 +12,7 @@
 #'
 #' @export
 
-toolLPJmLHarmonization <- function(version, climatetype) {
+toolLPJmLHarmonization <- function(lpjmlversion, climatetype) {
 
   cfg <- NULL
 
@@ -21,8 +21,8 @@ toolLPJmLHarmonization <- function(version, climatetype) {
   cfg$refYearHist     <- "y2010"
   cfg$baselineGcm     <- "MRI-ESM2-0:ssp370"
   cfg$refYearGcm      <- "y2025"
-  cfg$readinVersion   <- version
-  cfg$baselineVersion <- version
+  cfg$readinVersion   <- lpjmlversion
+  cfg$baselineVersion <- lpjmlversion
   cfg$climatetype     <- climatetype
   ##### DEFAULT CONFIG #####
 
@@ -34,8 +34,8 @@ toolLPJmLHarmonization <- function(version, climatetype) {
   #  * `+scen_<scenname>(_<runtype>)` - implemented scenario will be handled toolLPJmLScenario
 
   ### version addon
-  if (grepl("\\+", version)) {
-    tmp <- unlist(str_split(version, "\\+"))
+  if (grepl("\\+", lpjmlversion)) {
+    tmp <- unlist(str_split(lpjmlversion, "\\+"))
 
     if (any(grepl("baselineGcm", tmp))) {
       i <- grep("baselineGcm", tmp)

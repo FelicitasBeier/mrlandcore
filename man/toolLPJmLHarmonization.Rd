@@ -4,10 +4,10 @@
 \alias{toolLPJmLHarmonization}
 \title{toolLPJmLHarmonization}
 \usage{
-toolLPJmLHarmonization(version, climatetype)
+toolLPJmLHarmonization(lpjmlversion, climatetype)
 }
 \arguments{
-\item{version}{Switch between LPJmL versions (including add-ons (+*) for further version specification)}
+\item{lpjmlversion}{Switch between LPJmL versions (including add-ons (+*) for further version specification)}
 
 \item{climatetype}{Switch between different climate scenarios}
 }
