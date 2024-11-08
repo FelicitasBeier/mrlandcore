@@ -43,7 +43,8 @@ calcMulticroppingSuitability <- function(selectyears, lpjml, climatetype,
     # crop that's grown over several years or because the growing period is too long to
     # allow for another season
     cropsNoMC <- c("sugr_cane", "oilpalm", "betr", "begr")
-
+    # remove pasture from croplist
+    croplist <- croplist[croplist != "pasture"]
   } else if (sectoral == "lpj") {
     # LPJmL crops selected
     croplist <- unique(lpj2mag$LPJmL5)
@@ -51,11 +52,9 @@ calcMulticroppingSuitability <- function(selectyears, lpjml, climatetype,
     # crop that's grown over several years or because the growing period is too long to
     # allow for another season
     cropsNoMC <- c("sugarcane", "biomass tree", "biomass grass")
-
+    # remove pasture from croplist
+    croplist <- croplist[croplist != "grassland"]
   }
-
-  # remove pasture from croplist
-  croplist <- croplist[croplist != "pasture"]
 
   # Prepare data structure as crop-specific object
   # (While the chosen rule is not crop-specific,

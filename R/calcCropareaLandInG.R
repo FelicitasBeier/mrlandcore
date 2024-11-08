@@ -10,7 +10,6 @@
 #'                    agrees with the physical cropland of readLandInG(subtype = physical)
 #' @param cellular    if TRUE: calculates cellular crop area for all magpie croptypes.
 #'                    Option FALSE is not (yet) available.
-#' @param cells       Switch between "magpiecell" (59199) and "lpjcell" (67420)
 #' @param irrigation  If true: cellular areas are returned separated
 #'                    into irrigated and rainfed
 #' @param selectyears extract certain years from the data
@@ -23,11 +22,11 @@
 #' @author David Hoetten, Felicitas Beier
 #'
 #' @importFrom madrat readSource toolConditionalReplace toolCountryFill toolAggregate
-#' @importFrom magclass dimSums getItems
+#' @importFrom magclass dimSums getItems dimOrder
 #' @importFrom mstools toolHoldConstant
-#'
+
 calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE,
-                                cells = "magpiecell", irrigation = FALSE, selectyears = "all",
+                                irrigation = FALSE, selectyears = "all",
                                 lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                                           crop = "ggcmi_phase3_nchecks_bft_e511ac58"),
                                 climatetype = "GSWP3-W5E5:historical") {
@@ -226,10 +225,11 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
     violation <- fctMCwhereNonSuit(physicalAreaYearly = physicalAreaYearly,
                                    harvestedAreaYearly = harvestedAreaYearly,
                                    mcSuit = mcSuit)
-    if (any(violation)) {
-      stop("Not all cases where multiple cropping happens
-      despite not being suitable for multiple cropping have been corrected.")
-    }
+    # Check whether there are cases where multiple cropping happens despite not being suitable
+    # for multiple cropping even after correction
+    toolExpectTrue(!any(violation), "All cases where multiple cropping happens according to calcCropareaLandInG are
+                                     suitable for multiple cropping according to calcMulticroppingSuitability",
+                   level = 0, falseStatus = "warn")
 
     ###################
     ## Select output ##
@@ -280,15 +280,6 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
       # fill missing countries with 0
       cropArea <- toolConditionalReplace(x = toolCountryFill(cropArea),
                                          conditions = "is.na()", replaceby = 0)
-    } else {
-      if (cells == "magpiecell") {
-        cropArea <- toolCoord2Isocell(cropArea)
-      } else if (cells == "lpjcell") {
-        # this is already the format of cropArea
-      } else {
-        stop("This value for the cell parameter is not supported,
-          choose between \"magpiecell\" and \"lpjcell\"")
-      }
     }
     cropAreaList[[y]] <- cropArea
   }
