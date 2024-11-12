@@ -48,7 +48,7 @@ correctLPJmL <- function(x) {
     unit <- "m^3/ha"
   } else if (identical(unit, "")) {
     # empty units are replaced with 1 in magclass
-    unit <- NULL
+    unit <- "1"
   } else if (unit == "m2") {
     # convert m^2 to ha
     # Transformation factor (numerator): 1 m^2 = 1e-4 ha
