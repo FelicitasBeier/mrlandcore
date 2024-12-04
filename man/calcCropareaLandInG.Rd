@@ -10,9 +10,8 @@ calcCropareaLandInG(
   cellular = FALSE,
   irrigation = FALSE,
   selectyears = "all",
-  lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
-    "ggcmi_phase3_nchecks_bft_e511ac58"),
-  climatetype = "GSWP3-W5E5:historical"
+  lpjml = "lpjml5.9.5-m1",
+  climatetype = "MRI-ESM2-0:ssp370"
 )
 }
 \arguments{

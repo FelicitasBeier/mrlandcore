@@ -27,13 +27,14 @@
 
 calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE,
                                 irrigation = FALSE, selectyears = "all",
-                                lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                                          crop = "ggcmi_phase3_nchecks_bft_e511ac58"),
-                                climatetype = "GSWP3-W5E5:historical") {
+                                lpjml = "lpjml5.9.5-m1",
+                                climatetype = "MRI-ESM2-0:ssp370") {
+  ### To Do: update default argument of lpjml and climatetype once we have new LPJmL version ready
 
   if (climatetype != "GSWP3-W5E5:historical" ||
         lpjml[["crop"]] != "ggcmi_phase3_nchecks_bft_e511ac58") {
-    warning("Error in calcCropareaLandInG: The LPJmL version has been updated
+    warning("Potential mismatch in calcCropareaLandInG:
+            The LPJmL version has been updated
             since LandInG was run for the last time.
             Please consider updating the LandInG data.")
     # Kristine: How to include a mapping here?
