@@ -36,7 +36,7 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     # return smoothed LPJmL data for historical baseline chosen
     x <- calcOutput("LPJmLtransform", lpjmlversion = cfg$readinVersion,
                     climatetype = cfg$climatetype, subtype = subtype,
-                    subdata = subdata, stage = "smoothed",
+                    subdata = subdata, stage = "smoothed:cut",
                     aggregate = FALSE, supplementary = TRUE)
     # extract unit from LPJmL data
     unit <- x$unit
@@ -50,7 +50,7 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     # read in historical data for subtype
     baseline <- calcOutput("LPJmLtransform", lpjmlversion = cfg$baselineVersion,
                            climatetype = cfg$baselineHist, subtype = subtype,
-                           subdata = subdata, stage = "smoothed",
+                           subdata = subdata, stage = "smoothed:cut",
                            aggregate = FALSE, supplementary = TRUE)
     unit <- baseline$unit
     baseline <- baseline$x
@@ -58,7 +58,7 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     # read in future scenario data for subtype
     x <- calcOutput("LPJmLtransform", lpjmlversion = cfg$readinVersion,
                     climatetype = cfg$baselineGcm, subtype = subtype,
-                    subdata = subdata, stage = "smoothed", aggregate = FALSE)
+                    subdata = subdata, stage = "smoothed:cut", aggregate = FALSE)
 
     # harmonize default future scenario to default baseline until
     # default historical year
@@ -79,7 +79,7 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
       # read in future scenario data for subtype
       x <- calcOutput("LPJmLtransform", lpjmlversion = cfg$readinVersion,
                       climatetype = cfg$climatetype, subtype = subtype,
-                      subdata = subdata, stage = "smoothed", aggregate = FALSE)
+                      subdata = subdata, stage = "smoothed:cut", aggregate = FALSE)
       # harmonize chosen climate scenario to default baseline scenario
       out <- toolHarmonize2Baseline(x, harmonizedScen, ref_year = cfg$refYearGcm)
     }
