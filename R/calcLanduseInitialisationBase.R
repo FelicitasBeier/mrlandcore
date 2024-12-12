@@ -4,7 +4,6 @@
 #' returns the data set in a basic configuration. Use \code{\link{calcLanduseInitialisation}} for
 #' more settings.
 #'
-#' @param cells "magpiecell" for 59199 cells or "lpjcell" for 67420 cells
 #' @param selectyears Years to be computed (default on "past")
 #' @return Cellular landuse initialisation in its base configuration
 #' @author Jan Philipp Dietrich, Benjamin Leon Bodirsky, Kristine Karstens, Felcitas Beier, Patrick v. Jeetze
@@ -12,7 +11,7 @@
 #' \dontrun{
 #' calcOutput("LanduseInitialisationBase")
 #' }
-calcLanduseInitialisationBase <- function(cells = "lpjcell", selectyears = "past") {
+calcLanduseInitialisationBase <- function(selectyears = "past") {
 
   selectyears <- sort(findset(selectyears, noset = "original"))
 
@@ -82,9 +81,11 @@ calcLanduseInitialisationBase <- function(cells = "lpjcell", selectyears = "past
                                fill = 0, verbosity = 2)
   natTarget <- .natureTarget(luCountry, forestArea)
 
-  vegC  <- calcOutput("LPJmL_new", subtype = "vegc", stage = "smoothed",
-                      version = "LPJmL4_for_MAgPIE_44ac93de", climatetype = "GSWP3-W5E5:historical",
-                      aggregate = FALSE)[, selectyears, ]
+  vegC  <- calcOutput("LPJmLtransform",
+                      lpjmlversion = "lpjml5.9.5-m1",
+                      climatetype  = "MRI-ESM2-0:ssp370",
+                      subtype      = "pnv:vegc",
+                      aggregate    = FALSE)[, selectyears, ]
 
   lu2 <- toolForestRelocate(lu = lu, luCountry = luCountry, natTarget = natTarget, vegC = vegC)
 
@@ -109,10 +110,6 @@ calcLanduseInitialisationBase <- function(cells = "lpjcell", selectyears = "past
   }
 
   out <- .splitOther(lu2, luh)
-
-  if (cells == "magpiecell") {
-    out <- toolCoord2Isocell(out, cells = cells)
-  }
 
   if (any(out < 0)) {
     if (min(out) < -10e-6) {
