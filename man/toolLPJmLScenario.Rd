@@ -4,10 +4,10 @@
 \alias{toolLPJmLScenario}
 \title{toolLPJmLScenario}
 \usage{
-toolLPJmLScenario(version, climatetype, subtype)
+toolLPJmLScenario(lpjmlversion, climatetype, subtype)
 }
 \arguments{
-\item{version}{Switch between LPJmL versions (including add-ons (+*) for further version specification)}
+\item{lpjmlversion}{Switch between LPJmL versions (including add-ons (+*) for further version specification)}
 
 \item{climatetype}{Switch between different climate scenarios}
 

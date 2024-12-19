@@ -5,7 +5,7 @@
 \title{calcLPJmLTransform}
 \usage{
 calcLPJmLTransform(
-  version = "lpjml5.9.5-m1",
+  lpjmlversion = "lpjml5.9.5-m1",
   climatetype = "MRI-ESM2-0:ssp370",
   subtype = "pnv:soilc",
   subdata = NULL,
@@ -13,13 +13,16 @@ calcLPJmLTransform(
 )
 }
 \arguments{
-\item{version}{Switch between LPJmL versions (including addons for further version specification)}
+\item{lpjmlversion}{Switch between LPJmL versions (including addons for further version specification)}
 
 \item{climatetype}{Switch between different climate scenarios (climatemodel:climatescenario)}
 
 \item{subtype}{Switch between different lpjml input (runtype:filename)}
 
-\item{subdata}{Switch between data dimension subitems}
+\item{subdata}{Selection of subitems of object.
+This argument can be used to split up the data in smaller objects
+where only a sub-set of the data is needed or
+for better handling where otherwise memory issues would occur due to the object size.}
 
 \item{stage}{Degree of processing: raw:cut, smoothed:cut           - raw or smoothed data from 1930|1951
 raw:fullhist, smoothed:fullhist - raw or smoothed data with full history}

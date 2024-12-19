@@ -17,7 +17,7 @@
 #' @importFrom magclass dimSums getYears setYears
 #'
 #' @seealso
-#' [toolLPJmLHarmonization()]
+#' [toolLPJmLHarmonize()]
 #' @examples
 #' \dontrun{
 #' calcOutput("LPJmLHarmonize", subtype = "pnv:soilc", aggregate = FALSE)
@@ -66,8 +66,8 @@ calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
 
     # (2) the chosen climate scenario is harmonized to the reference scenario
     if (cfg$climatetype == cfg$baselineGcm) {
-      # If climatetype is identical to the default climatetype
-      # from toolLPJmLHarmonization no additional harmonization is required
+      # If climatetype identical to the default climatetype
+      # from toolLPJmLHarmonize no additional harmonization is required
       out <- harmonizedScen
     } else {
       # Otherwise the scenario from the chosen climatetype is harmonized

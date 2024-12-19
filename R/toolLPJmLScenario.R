@@ -2,7 +2,7 @@
 #'
 #' @description Specify default settings for LPJmL version and baseline settings
 #'
-#' @param version Switch between LPJmL versions (including add-ons (+*) for further version specification)
+#' @param lpjmlversion Switch between LPJmL versions (including add-ons (+*) for further version specification)
 #' @param climatetype  Switch between different climate scenarios
 #' @param subtype      Switch between runtype and variables in LPJmL
 #'
@@ -13,12 +13,12 @@
 #'
 #' @export
 
-toolLPJmLScenario <- function(version, climatetype, subtype) {
+toolLPJmLScenario <- function(lpjmlversion, climatetype, subtype) {
 
   cfg <- NULL
 
   ##### DEFAULT CONFIG #####
-  cfg$version     <- version
+  cfg$version     <- lpjmlversion
   cfg$climatetype <- climatetype
   cfg$subtype     <- subtype
   ##### DEFAULT CONFIG #####
@@ -28,10 +28,10 @@ toolLPJmLScenario <- function(version, climatetype, subtype) {
   # (1) add-on tag in version argument - implemented add-ons:
   #  * `+scen_<scenname>(_<runtype>)`  - change runtype setting
 
-  if (grepl("\\+scen", version)) {
+  if (grepl("\\+scen", lpjmlversion)) {
 
-    scen         <- unlist(strsplit(version, split = "\\+"))[2]
-    cfg$version  <- unlist(strsplit(version, split = "\\+"))[1]
+    scen         <- unlist(strsplit(lpjmlversion, split = "\\+"))[2]
+    cfg$version  <- unlist(strsplit(lpjmlversion, split = "\\+"))[1]
     scenParts    <- unlist(strsplit(scen, split = "_"))
     subtypeParts <- toolSplitSubtype(subtype, list(runtype = NULL, variable = NULL))
 

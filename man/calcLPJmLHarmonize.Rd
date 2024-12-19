@@ -35,7 +35,7 @@ calcOutput("LPJmLHarmonize", subtype = "pnv:soilc", aggregate = FALSE)
 }
 }
 \seealso{
-[toolLPJmLHarmonization()]
+[toolLPJmLHarmonize()]
 }
 \author{
 Kristine Karstens, Felicitas Beier
