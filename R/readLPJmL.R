@@ -18,7 +18,7 @@
 readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
 
   # filenames for dataset and grid
-  files <- list.files(path = ".", pattern = "\\.bin\\.json$", full.names = TRUE)
+  files <- list.files(path = ".", pattern = "\\.bin\\.json$", full.names = FALSE)
   gridname <- lpjmlkit::find_varfile(".", variable = "grid")
   dataname <- grep("grid", files, invert = TRUE, value = TRUE)
   if (length(dataname) != 1) {
