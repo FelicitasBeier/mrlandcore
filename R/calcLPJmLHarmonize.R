@@ -1,4 +1,4 @@
-#' @title calcLPJmLharmonize
+#' @title calcLPJmLHarmonize
 #' @description Handle harmonization of LPJmL data
 #'
 #' @param lpjmlversion Switch between LPJmL versions (including addons for further version specification)
@@ -20,21 +20,21 @@
 #' [toolLPJmLHarmonization()]
 #' @examples
 #' \dontrun{
-#' calcOutput("LPJmLharmonize", subtype = "pnv:soilc", aggregate = FALSE)
+#' calcOutput("LPJmLHarmonize", subtype = "pnv:soilc", aggregate = FALSE)
 #' }
 
-calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
+calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
                                climatetype = "MRI-ESM2-0:ssp370",
                                subtype = "pnv:soilc", subdata = NULL) {
 
-  ### Question (Jan): calcLPJmLharmonize is very slow. Can we do anything to improve the performance?
+  ### Question (Jan): calcLPJmLHarmonize is very slow. Can we do anything to improve the performance?
 
   # Extract settings for LPJmL from version and climatetype argument
-  cfg <- toolLPJmLHarmonization(lpjmlversion = lpjmlversion, climatetype = climatetype)
+  cfg <- toolLPJmLHarmonize(lpjmlversion = lpjmlversion, climatetype = climatetype)
 
   if (grepl("historical", climatetype)) {
     # return smoothed LPJmL data for historical baseline chosen
-    x <- calcOutput("LPJmLtransform", lpjmlversion = cfg$readinVersion,
+    x <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                     climatetype = cfg$climatetype, subtype = subtype,
                     subdata = subdata, stage = "smoothed:cut",
                     aggregate = FALSE, supplementary = TRUE)
@@ -48,7 +48,7 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     # based on the default settings of toolLPJmLHarmonization
 
     # read in historical data for subtype
-    baseline <- calcOutput("LPJmLtransform", lpjmlversion = cfg$baselineVersion,
+    baseline <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                            climatetype = cfg$baselineHist, subtype = subtype,
                            subdata = subdata, stage = "smoothed:cut",
                            aggregate = FALSE, supplementary = TRUE)
@@ -56,7 +56,7 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     baseline <- baseline$x
 
     # read in future scenario data for subtype
-    x <- calcOutput("LPJmLtransform", lpjmlversion = cfg$readinVersion,
+    x <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                     climatetype = cfg$baselineGcm, subtype = subtype,
                     subdata = subdata, stage = "smoothed:cut", aggregate = FALSE)
 
@@ -65,11 +65,9 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     harmonizedScen <- toolHarmonize2Baseline(x, baseline, ref_year = cfg$refYearHist)
 
     # (2) the chosen climate scenario is harmonized to the reference scenario
-    if (cfg$climatetype == cfg$baselineGcm &&
-          cfg$readinVersion == cfg$baselineVersion) {
-      # If climatetype and baseline identical to the default climatetype
-      # and default baseline from toolLPJmLHarmonization
-      # no additional harmonization is required
+    if (cfg$climatetype == cfg$baselineGcm) {
+      # If climatetype is identical to the default climatetype
+      # from toolLPJmLHarmonization no additional harmonization is required
       out <- harmonizedScen
     } else {
       # Otherwise the scenario from the chosen climatetype is harmonized
@@ -77,7 +75,7 @@ calcLPJmLharmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
       # GCM future starts
 
       # read in future scenario data for subtype
-      x <- calcOutput("LPJmLtransform", lpjmlversion = cfg$readinVersion,
+      x <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                       climatetype = cfg$climatetype, subtype = subtype,
                       subdata = subdata, stage = "smoothed:cut", aggregate = FALSE)
       # harmonize chosen climate scenario to default baseline scenario

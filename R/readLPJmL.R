@@ -34,11 +34,19 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
   unit        <- meta$unit
   # check units
   mapUnitsExp <- toolGetMapping("lpjmlUnits.csv", where = "mrlandcore")
-  expUnit     <- mapUnitsExp[mapUnitsExp$variable == gsub(".bin.json", "",
-                                                          gsub("./", "", dataname)), 2]
-  toolExpectTrue(unit == expUnit, "LPJmL unit is as expected",
-                 level = 0, falseStatus = "warn")
-
+  unitFile    <- "mrlandcore/inst/extdata/lpjmlUnits.csv"
+  expUnit     <- mapUnitsExp[mapUnitsExp$variable == gsub(".bin.json", "",  dataname), 2]
+  if (unknownUnit <- (length(expUnit) == 0)) {
+    toolExpectTrue(!unknownUnit, paste0("LPJml unit entry for dataname found in lpjmlUnits table",
+                                        if (unknownUnit) paste0("\nYou might want to add ", dataname,
+                                                                " to ", unitFile)),
+                   falseStatus = "note")
+  } else {
+    toolExpectTrue(unit == expUnit, paste0("LPJmL unit is as expected.",
+                                           if (unit != expUnit) paste0("\nYou might want to change ", dataname,
+                                                                       " in ", unitFile)),
+                   falseStatus = "warn")
+  }
   # extract grid information
   x$add_grid(gridname, silent = TRUE)
   grid <- x$grid$data

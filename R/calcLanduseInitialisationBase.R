@@ -81,7 +81,7 @@ calcLanduseInitialisationBase <- function(selectyears = "past") {
                                fill = 0, verbosity = 2)
   natTarget <- .natureTarget(luCountry, forestArea)
 
-  vegC  <- calcOutput("LPJmLtransform",
+  vegC  <- calcOutput("LPJmLTransform",
                       lpjmlversion = "lpjml5.9.5-m1",
                       climatetype  = "MRI-ESM2-0:ssp370",
                       subtype      = "pnv:vegc",

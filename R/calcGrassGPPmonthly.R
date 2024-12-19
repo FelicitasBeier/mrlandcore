@@ -32,7 +32,7 @@ calcGrassGPPmonthly <- function(selectyears, lpjml, climatetype) {
   # monthly irrigated grass GPP (in tDM/ha)
   # To Do (Feli): adjust runfolder once new runs ready
   # Jens: this would be from irrigated run (cropsIr) in the future, right?
-  monthlyIrrigated <- calcOutput("LPJmLharmonize", subtype = "crops:gpp_grass_ir",
+  monthlyIrrigated <- calcOutput("LPJmLHarmonize", subtype = "crops:gpp_grass_ir",
                                  years = selectyears,
                                  lpjmlversion = lpjml, climatetype = climatetype,
                                  aggregate = FALSE)
@@ -40,7 +40,7 @@ calcGrassGPPmonthly <- function(selectyears, lpjml, climatetype) {
   # monthly rainfed grass GPP (in tDM/ha)
   # To Do (Feli): adjust runfolder once new runs ready
   # Jens: this would be from rainfed run (cropsRf) in the future, right?
-  monthlyRainfed <- calcOutput("LPJmLharmonize", subtype = "crops:gpp_grass_rf",
+  monthlyRainfed <- calcOutput("LPJmLHarmonize", subtype = "crops:gpp_grass_rf",
                                years = selectyears,
                                lpjmlversion = lpjml, climatetype = climatetype,
                                aggregate = FALSE)

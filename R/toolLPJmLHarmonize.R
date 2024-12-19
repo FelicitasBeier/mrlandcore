@@ -1,4 +1,4 @@
-#' @title toolLPJmLHarmonization
+#' @title toolLPJmLHarmonize
 #'
 #' @description Specify default settings for LPJmL version and baseline settings
 #'
@@ -12,20 +12,21 @@
 #'
 #' @export
 
-toolLPJmLHarmonization <- function(lpjmlversion, climatetype) {
+toolLPJmLHarmonize <- function(lpjmlversion, climatetype) {
 
   cfg <- NULL
+  cfg <- toolLPJmLDefault(suppressNote = TRUE)
+  # toolLPJmLDefault defines - see toolLPJmLDefault for detais
+  ## cfg$baselineHist
+  ## cfg$refYearHist
+  ## cfg$baselineGcm
+  ## cfg$refYearGcm
+  ## cfg$defaultLPJmLVersion  - Use only for purely historical purposes
+  ## cfg$climateInputScen     - Use for climate inputs future
+  ## cfg$climateInputHist     - Use for climate inputs past
 
-  ##### DEFAULT CONFIG #####
-  cfg$baselineHist    <- "GSWP3-W5E5:historical"
-  cfg$refYearHist     <- "y2010"
-  cfg$baselineGcm     <- "MRI-ESM2-0:ssp370"
-  cfg$refYearGcm      <- "y2025"
   cfg$readinVersion   <- lpjmlversion
-  cfg$baselineVersion <- lpjmlversion
   cfg$climatetype     <- climatetype
-  ##### DEFAULT CONFIG #####
-
 
   ##### ADDON CONFIG #####
   # overwrite default settings and LPJmL version for
@@ -44,6 +45,11 @@ toolLPJmLHarmonization <- function(lpjmlversion, climatetype) {
     }
   }
   ##### ADDON CONFIG #####
+
+  toolExpectTrue(cfg$readinVersion == cfg$defaultLPJmLVersion,
+                 "defaultLPJmLVersion in toolLPJmLDefault identical to
+                 LPJmLversion setting in preprocessing config.",
+                 falseStatus = "note")
 
   return(cfg)
 }
