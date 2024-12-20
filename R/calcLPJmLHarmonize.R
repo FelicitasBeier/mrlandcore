@@ -41,7 +41,7 @@ calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     # extract unit from LPJmL data
     unit <- x$unit
     # extract data
-    x <- x$x
+    out <- x$x
   } else {
     # The harmonization consists of two steps:
     # (1) the reference scenario is harmonized to reference baseline
