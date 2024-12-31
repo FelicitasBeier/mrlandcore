@@ -46,7 +46,7 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {mrlandcore: One-line description of this awesome package},
   author = {Felicitas Beier and Kristine Karstens and Marcos Alves and Jan {Philipp Dietrich} and Benjamin {Leon Bodirsky} and David Hoetten and Florian Humpenoeder and Jens Heinke and Patrick {v. Jeetze} and Abhijeet Mishra and Felcitas Beier and Stephen Wirth and David Chen and Ulrich Kreidenweis},
-  date = {2024-12-19},
+  date = {2024-12-30},
   year = {2024},
   url = {https://github.com/pik-piam/mrlandcore},
   note = {Version: 1.2.0.9025},
