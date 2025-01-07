@@ -31,7 +31,12 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
                                 climatetype = "MRI-ESM2-0:ssp370") {
   ### To Do: update default argument of lpjml and climatetype once we have new LPJmL version ready
 
-  toolExpectTrue(lpjml[["crop"]] == "ggcmi_phase3_nchecks_bft_e511ac58",
+  if (length(lpjml) != 1) {
+    tmp <- lpjml[["crop"]]
+  } else {
+    tmp <- lpjml
+  }
+  toolExpectTrue(tmp == "ggcmi_phase3_nchecks_bft_e511ac58",
                  paste0("In calcCropareaLandInG: ",
                         "LPJmL version is in line with the version used ",
                         "in last LandInG run."),
