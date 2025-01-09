@@ -21,6 +21,7 @@
 
 calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore", rice = "non_flooded",
                            selectyears = "past", missing = "ignore") {
+
   past <- findset("past")
 
   if (share == "total") {
@@ -73,10 +74,16 @@ calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore", rice = "non_fl
 
     if (missing == "fill") {
       # check for countries/years where no data is reported from FAO and fill with proxy of similar country
-      noData       <- where(dimSums(toolIso2CellCountries(x, cells = "lpjcell"), dim = 3) == 0)$true$individual
-      proxyMapping <- c(ATF = "ISL", ESH = "MAR", FLK = "ISL", GRL = "ISL",
-                        PSE = "ISR", SGS = "ISL", SJM = "NOR",
-                        CIV = "GHA", GUF = "SUR", REU = "MUS", SSD = "CAF", SDN = "TCD")
+      noData       <- where(dimSums(toolIso2CellCountries(x), dim = 3) == 0)$true$individual
+      proxyMapping <- c(AIA = "KNA", ALA = "FIN", ASM = "USA", ATF = "NZL", CKK = "IDN",
+                        CUW = "VEN", CXR = "IDN", CYM = "JAM", FLK = "ARG", FLK = "ARG",
+                        FSM = "PHL", GGY = "GBR", GLP = "DMA", GRL = "ISL", GUF = "SUR",
+                        GUM = "PHL", GUM = "PHL", HMD = "NZL", IMN = "GBR", IOT = "MDV",
+                        JEY = "GBR", MHL = "PHL", MNP = "PHL", MSR = "ATG", MTQ = "DMA",
+                        MYT = "MDG", NFK = "NZL", NFK = "NZL", PCN = "NZL", PLW = "PHL",
+                        PSE = "ISR", REU = "MUS", REU = "MUS", SDN = "EGY", SGS = "ARG",
+                        SHN = "ZAF", SJM = "NOR", SPM = "CAN", TCA = "JAM", UMI = "USA",
+                        VIR = "PRI", WLF = "FJI", ESH = "MAR", BMU = "CYM", CCK = "MUS")
 
       for (i in row(noData)[, 1]) {
         x[noData[i, "ISO"], noData[i, "Year"], ]  <- x[proxyMapping[noData[i, "ISO"]], noData[i, "Year"], ]
@@ -113,9 +120,15 @@ calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore", rice = "non_fl
     if (missing == "fill") {
       # check for countries/years where no data is reported from FAO and fill with proxy
       noData       <- where(dimSums(toolIso2CellCountries(x), dim = 3) == 0)$true$individual
-      proxyMapping <- c(ATF = "ISL", ESH = "MAR", FLK = "ISL", GRL = "ISL",
-                        PSE = "ISR", SGS = "ISL", SJM = "NOR",
-                        CIV = "GHA", GUF = "SUR", REU = "MUS", SSD = "CAF", SDN = "TCD")
+      proxyMapping <- c(AIA = "KNA", ALA = "FIN", ASM = "USA", ATF = "NZL", CKK = "IDN",
+                        CUW = "VEN", CXR = "IDN", CYM = "JAM", FLK = "ARG", FLK = "ARG",
+                        FSM = "PHL", GGY = "GBR", GLP = "DMA", GRL = "ISL", GUF = "SUR",
+                        GUM = "PHL", GUM = "PHL", HMD = "NZL", IMN = "GBR", IOT = "MDV",
+                        JEY = "GBR", MHL = "PHL", MNP = "PHL", MSR = "ATG", MTQ = "DMA",
+                        MYT = "MDG", NFK = "NZL", NFK = "NZL", PCN = "NZL", PLW = "PHL",
+                        PSE = "ISR", REU = "MUS", REU = "MUS", SDN = "EGY", SGS = "ARG",
+                        SHN = "ZAF", SJM = "NOR", SPM = "CAN", TCA = "JAM", UMI = "USA",
+                        VIR = "PRI", WLF = "FJI", ESH = "MAR", BMU = "CYM", CCK = "MUS")
       for (i in row(noData)[, 1]) {
         x[noData[i, "ISO"], noData[i, "Year"], ]  <- x[proxyMapping[noData[i, "ISO"]], noData[i, "Year"], ]
       }

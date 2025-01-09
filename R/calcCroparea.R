@@ -144,7 +144,7 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE,
       }
 
       # corrected rice area (in Mha)
-      ricearea <- calcOutput("Ricearea", cellular = TRUE, cells = cells,
+      ricearea <- calcOutput("Ricearea", cellular = TRUE,
                              share = FALSE, aggregate = FALSE)
 
       # irrigation
