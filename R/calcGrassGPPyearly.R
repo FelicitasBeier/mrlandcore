@@ -64,8 +64,8 @@ calcGrassGPPyearly <- function(selectyears, lpjml, climatetype, season) {
                                                           getItems(grperRainfed, dim = 3)),
                                                 fill = NA)
   # Name dimensions
-  getSets(grassGPPannual) <- c("x", "y", "iso", "year", "crop", "irrigation")
-  getSets(grassGPPgrper)  <- c("x", "y", "iso", "year", "crop", "irrigation")
+  getSets(grassGPPannual) <- c("x", "y", "iso", "year", "irrigation", "crop")
+  getSets(grassGPPgrper)  <- c("x", "y", "iso", "year", "irrigation", "crop")
 
   # Extract rainfed grass GPP in rainfed growing period of crop
   grassGPPgrper[, , "rainfed"]   <- grperRainfed[, , "rainfed"]

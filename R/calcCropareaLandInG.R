@@ -140,9 +140,9 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
     # that has more than 100 000 ha total harvested area
     if (any(dimSums(harvestedAreaYearly,
                     dim = c(1.1, 1.2, 3)) > 0.1 &
-            (dimSums(harvestedAreaYearly[, , perennials] - physicalAreaYearly[, , perennials],
-                     dim = c(1.1, 1.2, 3)) / dimSums(harvestedAreaYearly,
-                                                     dim = c(1.1, 1.2, 3)) * 100) > 10,
+              (dimSums(harvestedAreaYearly[, , perennials] - physicalAreaYearly[, , perennials],
+                       dim = c(1.1, 1.2, 3)) / dimSums(harvestedAreaYearly,
+                                                       dim = c(1.1, 1.2, 3)) * 100) > 10,
             na.rm = TRUE)) {
       stop(paste0("Some countries (with more than 100 000 ha harvested area) would loose more than 10% in year ", y))
     }
