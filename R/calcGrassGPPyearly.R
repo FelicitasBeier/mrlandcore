@@ -38,18 +38,14 @@ calcGrassGPPyearly <- function(selectyears, lpjml, climatetype, season) {
                                  lpjml = lpjml, climatetype = climatetype,
                                  aggregate = FALSE)[, , "irrigated"]
 
-  # To Do: update once new LPJmL data is there (with rainfed run and irrigated run)
-
   # irrigated grass GPP in irrigated growing period of crop (in tDM/ha)
-  # Jens: this will come from cropsIR run in the future, right?
-  grperIrrigated <- calcOutput("LPJmLHarmonize", subtype = "crops:cft_gpp_grass",
+  grperIrrigated <- calcOutput("LPJmLHarmonize", subtype = "cropsIR:cft_gpp_grass",
                                years = selectyears,
                                lpjmlversion = lpjml, climatetype = climatetype,
                                aggregate = FALSE)[, , "irrigated"]
 
   # rainfed grass GPP in rainfed growing period of crop (in tDM/ha)
-  # Jens: this will come from cropsRF run in the future, right?
-  grperRainfed <- calcOutput("LPJmLHarmonize", subtype = "crops:cft_gpp_grass",
+  grperRainfed <- calcOutput("LPJmLHarmonize", subtype = "cropsRF:cft_gpp_grass",
                              years = selectyears,
                              lpjmlversion = lpjml, climatetype = climatetype,
                              aggregate = FALSE)[, , "rainfed"]

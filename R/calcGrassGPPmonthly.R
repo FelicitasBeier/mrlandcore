@@ -24,23 +24,18 @@ calcGrassGPPmonthly <- function(selectyears, lpjml, climatetype) {
   ####################
   ### Read in data ###
   ####################
-  # To Do: update once new LPJmL data is there (with rainfed run and irrigated run)
-
+  # To Do: discuss with Jens:
   # Jens: is monthly grass GPP the same for cropsIr and cropsRf runs? (i.e., is separation not necessary?)
   # maybe this function is not necessary then... (only calcGrassGPPyearly)
 
   # monthly irrigated grass GPP (in tDM/ha)
-  # To Do (Feli): adjust runfolder once new runs ready
-  # Jens: this would be from irrigated run (cropsIr) in the future, right?
-  monthlyIrrigated <- calcOutput("LPJmLHarmonize", subtype = "crops:gpp_grass_ir",
+  monthlyIrrigated <- calcOutput("LPJmLHarmonize", subtype = "cropsIR:gpp_grass_ir",
                                  years = selectyears,
                                  lpjmlversion = lpjml, climatetype = climatetype,
                                  aggregate = FALSE)
 
   # monthly rainfed grass GPP (in tDM/ha)
-  # To Do (Feli): adjust runfolder once new runs ready
-  # Jens: this would be from rainfed run (cropsRf) in the future, right?
-  monthlyRainfed <- calcOutput("LPJmLHarmonize", subtype = "crops:gpp_grass_rf",
+  monthlyRainfed <- calcOutput("LPJmLHarmonize", subtype = "cropsRF:gpp_grass_rf",
                                years = selectyears,
                                lpjmlversion = lpjml, climatetype = climatetype,
                                aggregate = FALSE)
