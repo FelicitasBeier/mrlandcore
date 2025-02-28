@@ -27,7 +27,7 @@
 
 calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE,
                                 irrigation = FALSE, selectyears = "all",
-                                lpjml = "lpjml5.9.5-m1",
+                                lpjml = "lpjml5.9.16-m1",
                                 climatetype = "MRI-ESM2-0:ssp370") {
   ### To Do: update default argument of lpjml and climatetype once we have new LPJmL version ready
 
