@@ -4,6 +4,7 @@
 #' returns the data set in a basic configuration. Use \code{\link{calcLanduseInitialisation}} for
 #' more settings.
 #'
+
 #' @param selectyears Years to be computed (default on "past")
 #' @return Cellular landuse initialisation in its base configuration
 #' @author Jan Philipp Dietrich, Benjamin Leon Bodirsky, Kristine Karstens, Felcitas Beier, Patrick v. Jeetze
@@ -11,9 +12,11 @@
 #' \dontrun{
 #' calcOutput("LanduseInitialisationBase")
 #' }
-calcLanduseInitialisationBase <- function(selectyears = "past") {
+calcLanduseInitialisationBase <- function(selectyears = "past_til2020") {
 
   selectyears <- sort(findset(selectyears, noset = "original"))
+  selectyears <- as.integer(gsub("y", "", selectyears))
+
 
   .luIni <- function(luh, forestArea) {
     .shr <- function(x) {
@@ -69,8 +72,8 @@ calcLanduseInitialisationBase <- function(selectyears = "past") {
   }
 
   # cellular landuse area
-  luh <- calcOutput("LUH2v2", landuse_types = "LUH2v2", irrigation = FALSE, cellular = TRUE,
-                    selectyears = selectyears, cells = "lpjcell", aggregate = FALSE)
+  luh <- calcOutput("LUH3", landuseTypes = "LUH3", irrigation = FALSE, cellular = TRUE,
+                    yrs = selectyears, aggregate = FALSE)
   # country-level forest area
   forestArea <- calcOutput("ForestArea", selectyears = selectyears, aggregate = FALSE)
   # rename categories and split secondary forest into secondary forest and forestry
@@ -85,7 +88,12 @@ calcLanduseInitialisationBase <- function(selectyears = "past") {
                       lpjmlversion = "lpjml5.9.5-m1",
                       climatetype  = "MRI-ESM2-0:ssp370",
                       subtype      = "pnv:vegc",
-                      aggregate    = FALSE)[, selectyears, ]
+                      aggregate    = FALSE)
+
+  vegC <- toolFillYears(vegC, getYears(luh))
+
+  cyears <- intersect(getYears(vegC, as.integer = TRUE), selectyears)
+  vegC <- vegC[, cyears, ]
 
   lu2 <- toolForestRelocate(lu = lu, luCountry = luCountry, natTarget = natTarget, vegC = vegC)
 

@@ -4,7 +4,7 @@
 \alias{calcLanduseInitialisationBase}
 \title{calcLanduseInitialisationBase}
 \usage{
-calcLanduseInitialisationBase(selectyears = "past")
+calcLanduseInitialisationBase(selectyears = "past_til2020")
 }
 \arguments{
 \item{selectyears}{Years to be computed (default on "past")}

@@ -17,21 +17,21 @@ calcRicearea <- function(cellular = FALSE, share = TRUE) {
 
   local_options(magclass_sizeLimit = 1e+12)
 
-  selectyears <- findset("past")
-
   ############################################
   ### Ricearea and shares on country level ###
   ############################################
 
   # Country-level LUH flooded areas
-  floodedLUHiso  <- collapseNames(calcOutput("LUH2v2", landuse_types = "flooded",
-                                             aggregate = FALSE, irrigation = TRUE,
-                                             cellular = FALSE, selectyears = "past"))
+  floodedLUHiso  <- collapseNames(calcOutput("LUH3flood", aggregate = FALSE))
 
   # FAO rice areas (physical to be comparable with LUH)
   riceareaFAOiso <- collapseNames(calcOutput("Croparea", sectoral = "kcr", physical = TRUE,
                                              cellular = FALSE, irrigation = FALSE,
-                                             aggregate = FALSE)[, selectyears, "rice_pro"])
+                                             aggregate = FALSE)[, , "rice_pro"])
+
+  commonYears     <- intersect(getYears(riceareaFAOiso), getYears(floodedLUHiso))
+  floodedLUHiso   <- floodedLUHiso[, commonYears, ]
+  riceareaFAOiso  <- riceareaFAOiso[, commonYears, ]
 
   # Country-level rice area
   ricearea <- floodedLUHiso
@@ -72,7 +72,6 @@ calcRicearea <- function(cellular = FALSE, share = TRUE) {
       out         <- collapseNames(mbind(ricearea, floodedRicearea, nonfloodedRicearea))
       unit        <- "Mha"
       description <- "Physical rice area on country level"
-
     }
 
   } else {
@@ -81,9 +80,11 @@ calcRicearea <- function(cellular = FALSE, share = TRUE) {
     ############################################
 
     # Cellular LUH flooded areas
-    floodedLUH <- collapseNames(calcOutput("LUH2v2", landuse_types = "flooded",
-                                           cellular = TRUE, irrigation = TRUE,
-                                           selectyears = "past", aggregate = FALSE))
+    floodedLUH <- collapseNames(calcOutput("LUH3flood", aggregate = FALSE, cellular = TRUE))
+
+    commonYears <- intersect(getYears(nonriceShr), getYears(floodedLUH))
+    floodedLUH  <- floodedLUH[, commonYears, ]
+    nonriceShr  <- nonriceShr[, commonYears, ]
 
     # Correction for flooded non-rice areas (floodedLUHiso > riceareaFAOiso)
     commonCountries <- intersect(getItems(nonriceShr, dim = "country"), getItems(floodedLUH, dim = "iso"))
