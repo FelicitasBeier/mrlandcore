@@ -25,7 +25,7 @@ toolLPJmLDefault <- function(suppressNote = FALSE) {
 
   ### Default version settings
   #   Use only for purely historical purposes
-  cfg$defaultLPJmLVersion  <- "lpjml5.9.16-m2"
+  cfg$defaultLPJmLVersion  <- "lpjml5.10.0-m2"
   #   Use for climate inputs future and past
   cfg$climateInputScen     <- "ISIMIP3bv2"
   cfg$climateInputHist     <- "ISIMIP3av2"
