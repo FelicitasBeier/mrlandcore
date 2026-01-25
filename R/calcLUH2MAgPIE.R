@@ -21,10 +21,45 @@
 calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore",
                            rice = "non_flooded", missing = "ignore") {
 
+  # proxy filling map in the case of `missing = "fill"`
+  proxyMapping <- c(
+    # Polar or Sub-polar with Iceland/Norway
+    ATF = "ISL", FLK = "ISL", GRL = "ISL", SGS = "ISL", HMD = "ISL", SJM = "NOR",
+    # Nordic or Baltic
+    ALA = "FIN",
+    # North Atlantic with France or UK or Canada
+    GGY = "FRA", JEY = "FRA", IMN = "GBR", SPM = "CAN",
+    # Middle East
+    PSE = "ISR",
+    # Caribbean with Dominican Republic or Cuba or Venezuela or USA
+    AIA = "DOM", MSR = "DOM", GLP = "DOM", MTQ = "DOM", VIR = "DOM",
+    CYM = "CUB", TCA = "CUB", CUW = "VEN", BMU = "USA",
+    # Indian Ocean with Sri Lanka or Indonesia
+    IOT = "LKA", CCK = "IDN", CXR = "IDN",
+    # South America/Africa
+    GUF = "SUR", ESH = "MAR", MYT = "MDG", REU = "MDG", SHN = "ZAF",
+    # Pacific with Philippines or PNG or Australia or New Zealand
+    ASM = "PHL", GUM = "PHL", MHL = "PHL", MNP = "PHL", PLW = "PHL", UMI = "PHL", WLF = "PHL",
+    FSM = "PNG", NFK = "AUS", PCN = "NZL"
+  )
+
+# old mapping (which one is correct?)
+  #    proxyMapping <- c(
+  #      AIA = "KNA", ALA = "FIN", ASM = "USA", ATF = "NZL", CKK = "IDN",
+  #      CUW = "VEN", CXR = "IDN", CYM = "JAM", FLK = "ARG",
+  #      FSM = "PHL", GGY = "GBR", GLP = "DMA", GRL = "ISL", GUF = "SUR",
+  #      GUM = "PHL", HMD = "NZL", IMN = "GBR", IOT = "MDV",
+  #      JEY = "GBR", MHL = "PHL", MNP = "PHL", MSR = "ATG", MTQ = "DMA",
+  #      MYT = "MDG", NFK = "NZL", PCN = "NZL", PLW = "PHL",
+  #      PSE = "ISR", REU = "MUS", SDN = "EGY", SGS = "ARG",
+  #      SHN = "ZAF", SJM = "NOR", SPM = "CAN", TCA = "JAM", UMI = "USA",
+  #      VIR = "PRI", WLF = "FJI", ESH = "MAR", BMU = "CYM", CCK = "MUS"
+  #    )
+
   if (share == "total") {
 
     if (missing == "fill") {
-      warning("No missing data for total numbers assumend.")
+      warning("No missing data for total numbers assumed.")
     }
 
     FAOdata     <- calcOutput("Croparea", sectoral = "ProductionItem", # nolint : object_name_linter.
@@ -76,16 +111,6 @@ calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore",
     if (missing == "fill") {
       # check for countries/years where no data is reported from FAO and fill with proxy of similar country
       noData       <- where(dimSums(toolIso2CellCountries(x), dim = 3) == 0)$true$individual
-      proxyMapping <- c(
-        WLF = "FJI", UMI = "USA", ASM = "USA", PCN = "NZL", CYM = "JAM",
-        GRL = "ISL", TCA = "JAM", CUW = "VEN", VIR = "PRI", BMU = "CYM",
-        AIA = "KNA", MSR = "ATG", FLK = "ISL", SPM = "CAN", SGS = "ISL",
-        ESH = "MAR", SHN = "ZAF", SJM = "NOR", IMN = "GBR", GGY = "GBR",
-        JEY = "GBR", ALA = "FIN", PSE = "ISR", ATF = "ISL", MYT = "MDG",
-        IOT = "MDV", HMD = "NZL", CCK = "IDN", CXR = "IDN", PLW = "PHL",
-        FSM = "PHL", GUM = "PHL", MNP = "PHL", MHL = "PHL", NFK = "NZL",
-        GLP = "DMA", MTQ = "DMA", GUF = "SUR", REU = "MUS"
-      )
 
       for (i in row(noData)[, 1]) {
         x[noData[i, "ISO"], noData[i, "Year"], ]  <- x[proxyMapping[noData[i, "ISO"]], noData[i, "Year"], ]
@@ -122,17 +147,7 @@ calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore",
     if (missing == "fill") {
       # check for countries/years where no data is reported from FAO and fill with proxy
       noData       <- where(dimSums(toolIso2CellCountries(x), dim = 3) == 0)$true$individual
-      proxyMapping <- c(
-        AIA = "KNA", ALA = "FIN", ASM = "USA", ATF = "NZL", CKK = "IDN",
-        CUW = "VEN", CXR = "IDN", CYM = "JAM", FLK = "ARG", FLK = "ARG",
-        FSM = "PHL", GGY = "GBR", GLP = "DMA", GRL = "ISL", GUF = "SUR",
-        GUM = "PHL", GUM = "PHL", HMD = "NZL", IMN = "GBR", IOT = "MDV",
-        JEY = "GBR", MHL = "PHL", MNP = "PHL", MSR = "ATG", MTQ = "DMA",
-        MYT = "MDG", NFK = "NZL", NFK = "NZL", PCN = "NZL", PLW = "PHL",
-        PSE = "ISR", REU = "MUS", REU = "MUS", SDN = "EGY", SGS = "ARG",
-        SHN = "ZAF", SJM = "NOR", SPM = "CAN", TCA = "JAM", UMI = "USA",
-        VIR = "PRI", WLF = "FJI", ESH = "MAR", BMU = "CYM", CCK = "MUS"
-      )
+
       for (i in row(noData)[, 1]) {
         x[noData[i, "ISO"], noData[i, "Year"], ]  <- x[proxyMapping[noData[i, "ISO"]], noData[i, "Year"], ]
       }
