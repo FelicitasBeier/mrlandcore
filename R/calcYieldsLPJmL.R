@@ -171,7 +171,7 @@ calcYieldsLPJmL <- function(lpjml = "lpjml5.9.16-m1",
   yields[yields < 0] <- 0
 
   return(list(x            = yields,
-              weight       = NULL,
+              weight       = NULL,         ### Kristine, Jan: Should we provide a weight here?
               unit         = "tDM per ha",
               description  = "Yields for LPJmL crop types.",
               isocountries = FALSE))
