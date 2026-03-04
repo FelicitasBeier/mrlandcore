@@ -8,14 +8,13 @@ calcCroparea(
   sectoral = "kcr",
   physical = TRUE,
   cellular = FALSE,
-  irrigation = FALSE
+  irrigation = FALSE,
+  selectyears = "past",
+  datasource = "LandInG"
 )
 }
 \arguments{
-\item{sectoral}{"area_harvested" returns croparea aggregated to FAO products,
-"ProductionItem" unaggregated ProdSTAT items,
-"FoodBalanceItem" Food Balance Sheet categories,
-"kcr" MAgPIE items, and "lpj" LPJmL items}
+\item{sectoral}{"kcr" MAgPIE items, and "lpj" LPJmL items}
 
 \item{physical}{if TRUE the sum over all crops agrees with the cropland area per country}
 
@@ -27,17 +26,17 @@ specific LUH crop type to divide into MAgPIE crop types.}
 
 \item{irrigation}{If true: cellular areas are returned separated
 into irrigated and rainfed (see setup in calcLUH3)}
+
+\item{selectyears}{Vector of years to be returned}
+
+\item{datasource}{Croparea data source (LandInG or FAOLUH)}
 }
 \value{
 areas of individual crops from FAOSTAT and weight
 }
 \description{
-Returns harvested areas of individual crops from FAOSTAT.
-             Total harvested areas can be lower or higher than arable
-             land because of multicropping or fallow land.
-             Rice areas are distributed to flooded LUH areas. Additional FAOSTAT
-             rice areas are distributed based on country shares.
+returns croparea
 }
 \author{
-Ulrich Kreidenweis, Kristine Karstens, Felicitas Beier
+Felicitas Beier
 }
