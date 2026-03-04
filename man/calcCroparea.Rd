@@ -29,7 +29,9 @@ into irrigated and rainfed (see setup in calcLUH3)}
 
 \item{selectyears}{Vector of years to be returned}
 
-\item{datasource}{Croparea data source (LandInG or FAOLUH)}
+\item{datasource}{Croparea data source (LandInG or FAOLUH).
+Datasource FAOLUH is deprecated and is only kept for
+backwards compatibility.}
 }
 \value{
 areas of individual crops from FAOSTAT and weight
@@ -38,5 +40,5 @@ areas of individual crops from FAOSTAT and weight
 returns croparea
 }
 \author{
-Felicitas Beier
+Felicitas Beier, Benjamin Leon Bodirsky
 }
