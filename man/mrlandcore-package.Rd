@@ -4,7 +4,7 @@
 \name{mrlandcore-package}
 \alias{mrlandcore}
 \alias{mrlandcore-package}
-\title{mrlandcore: Fundamental MAgPIE preprocessing functions including calcLanduseInitialisation}
+\title{mrlandcore: Fundamental MAgPIE preprocessing functions including calcLanduseInitialisation and calcLPJmL}
 \description{
 Fundamental MAgPIE preprocessing functions including calcLanduseInitialisation.
 }

@@ -9,7 +9,8 @@ calcLPJmLTransform(
   climatetype = "MRI-ESM2-0:ssp370",
   subtype = "pnv:soilc",
   subdata = NULL,
-  stage = "smoothed:cut"
+  stage = "smoothed:cut",
+  monthly = FALSE
 )
 }
 \arguments{
@@ -21,11 +22,23 @@ calcLPJmLTransform(
 
 \item{subdata}{Selection of subitems of object.
 This argument can be used to split up the data in smaller objects
-where only a sub-set of the data is needed or
-for better handling where otherwise memory issues would occur due to the object size.}
+where only a sub-set of the data is needed or for better handling
+where otherwise memory issues would occur due to the object size.}
 
 \item{stage}{Degree of processing: raw:cut, smoothed:cut           - raw or smoothed data from 1930|1951
 raw:fullhist, smoothed:fullhist - raw or smoothed data with full history}
+
+\item{monthly}{Controls handling of monthly LPJmL outputs.
+The argument can be provided either as a logical value or as a character
+string specifying an aggregation method.
+TRUE: return monthly data (if available). Month indices are renamed from numeric values
+to abbreviated month names.
+FALSE: return the data without modification (default; appropriate for yearly inputs).
+"FALSE:sum": aggregate monthly data to yearly values using the sum across months
+(appropriate for fluxes, e.g. NPP/GPP/runoff/precipitation).
+"FALSE:mean": aggregate monthly data to yearly values using the arithmetic mean across
+months (appropriate for stocks/pools, e.g. soil carbon, biomass stocks).
+If monthly = TRUE but no month dimension exists, an error is thrown.}
 }
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.

@@ -11,15 +11,17 @@
 #' readSource("LPJmL", convert = "onlycorrect")
 #' }
 #'
-
 correctLPJmL <- function(x) {
-
   # check and replace negative values
-  toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative", falseStatus = "warn")
-  x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
+  # toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative", falseStatus = "warn")
+  # x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
 
-  ### To Do (discuss with Mike, Kristine): Do we want warning from these?
-  ### Do we want to replace N/A's and <0 with 0?
+  ### To Do (discuss with Mike, Kristine): There are outputs where negative
+  # values are possible (e.g., monthly NPP). There, we would like to keep
+  # the negatives and only correct for them after aggregating to yearly values.
+  # Should we move above toolExpectTrue and correction somewhere else
+  # (e.g., the calc function of the respective input where we know it must be >0)
+  # I moved it now to calcLPJmLTransform (after monthly aggregation)
 
   # check and replace N/A's
   toolExpectTrue(all(!is.na(x)), "Data provided by LPJmL doesn't contain N/A's", falseStatus = "warn")
@@ -29,6 +31,8 @@ correctLPJmL <- function(x) {
   unit <- madrat::getFromComment(x, "unit")
 
   ### To Do (Kristine): please double-check unit conversion below
+
+  ### To Do (Kristine, Mike): Shouldn't the following better be in convertLPJmL
 
   # unit conversion
   if (grepl("gC/m2", unit)) {

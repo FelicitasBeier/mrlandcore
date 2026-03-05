@@ -7,7 +7,7 @@
 calcLanduseInitialisationBase(selectyears = "past_til2020")
 }
 \arguments{
-\item{selectyears}{Years to be computed (default on "past")}
+\item{selectyears}{Years to be computed}
 }
 \value{
 Cellular landuse initialisation in its base configuration

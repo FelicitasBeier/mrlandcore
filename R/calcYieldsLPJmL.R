@@ -65,14 +65,15 @@ calcYieldsLPJmL <- function(lpjml = "lpjml5.9.16-m1",
                                  subtype = "cropsIR:pft_harvestc",
                                  subdata = paste("irrigated", crop, sep = "."),
                                  lpjmlversion = lpjml, climatetype = climatetype,
-                                 years = selectyears, aggregate = FALSE)
+                                 years = selectyears, monthly = FALSE,
+                                 aggregate = FALSE)
 
     if (crop == "grassland") {
       t <- dimSums(calcOutput("LPJmLHarmonize",
                               subtype = "grass:gpp",
                               lpjmlversion = lpjml,
                               climatetype = climatetype,
-                              years = selectyears,
+                              years = selectyears, monthly = FALSE,
                               aggregate = FALSE),
                    dim = 3) * 0.23 # HACKATHON: Document magical number from Jens
       t <- add_dimension(t, dim = 3.1, add = "irrigation", nm = "rainfed")
@@ -83,7 +84,8 @@ calcYieldsLPJmL <- function(lpjml = "lpjml5.9.16-m1",
                                    subtype = "cropsRF:pft_harvestc",
                                    subdata = paste("rainfed", crop, sep = "."),
                                    lpjmlversion = lpjml, climatetype = climatetype,
-                                   years = selectyears, aggregate = FALSE)
+                                   years = selectyears, monthly = FALSE,
+                                   aggregate = FALSE)
     }
 
     # irrigated and rainfed yields in main growing period (in tDM/ha)
@@ -123,29 +125,29 @@ calcYieldsLPJmL <- function(lpjml = "lpjml5.9.16-m1",
     # Multiple cropping share
     if (areaMask == "none") {
       mcShr <- calcOutput("MulticroppingCells",
-                           sectoral = "lpj",
-                           scenario = "potential:exogenous",
-                           lpjml = lpjml,
-                           climatetype = climatetype,
-                           selectyears = selectyears,
-                           aggregate = FALSE)
+                          sectoral = "lpj",
+                          scenario = "potential:exogenous",
+                          lpjml = lpjml,
+                          climatetype = climatetype,
+                          selectyears = selectyears,
+                          aggregate = FALSE)
       # multiple cropping is allowed everywhere
       mcShr[, , ] <- 1
     } else if (grepl(pattern = "actual", x = areaMask)) {
       # Cropping Intensity Factor (between 1 and 2)
       ci <- calcOutput("MulticroppingIntensity", scenario = strsplit(areaMask, split = ":")[[1]][2],
-                            sectoral = "lpj",
-                            selectyears = selectyears, aggregate = FALSE)
+                       sectoral = "lpj",
+                       selectyears = selectyears, aggregate = FALSE)
       # Share that is multiple cropped
       mcShr <- ci - 1
     } else {
       # for potential case: cell is fully multiple cropped
       mcShr <- calcOutput("MulticroppingCells", scenario = areaMask,
-                           sectoral = "lpj",
-                           lpjml = lpjml,
-                           climatetype = climatetype,
-                           selectyears = selectyears,
-                           aggregate = FALSE)
+                          sectoral = "lpj",
+                          lpjml = lpjml,
+                          climatetype = climatetype,
+                          selectyears = selectyears,
+                          aggregate = FALSE)
     }
     # Add grassland to mcShr object with suitability set to 0
     # Note: The grassland growing period is already the whole year, so no multiple

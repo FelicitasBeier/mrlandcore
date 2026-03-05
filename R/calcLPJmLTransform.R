@@ -4,12 +4,23 @@
 #' @param lpjmlversion Switch between LPJmL versions (including addons for further version specification)
 #' @param climatetype  Switch between different climate scenarios (climatemodel:climatescenario)
 #' @param subtype      Switch between different lpjml input (runtype:filename)
-#' @param subdata Selection of subitems of object.
-#'                This argument can be used to split up the data in smaller objects
-#'                where only a sub-set of the data is needed or
-#'                for better handling where otherwise memory issues would occur due to the object size.
-#' @param stage Degree of processing: raw:cut, smoothed:cut           - raw or smoothed data from 1930|1951
-#'                                    raw:fullhist, smoothed:fullhist - raw or smoothed data with full history
+#' @param subdata      Selection of subitems of object.
+#'                     This argument can be used to split up the data in smaller objects
+#'                     where only a sub-set of the data is needed or for better handling
+#'                     where otherwise memory issues would occur due to the object size.
+#' @param stage        Degree of processing: raw:cut, smoothed:cut           - raw or smoothed data from 1930|1951
+#'                                           raw:fullhist, smoothed:fullhist - raw or smoothed data with full history
+#' @param monthly      Controls handling of monthly LPJmL outputs.
+#'                     The argument can be provided either as a logical value or as a character
+#'                     string specifying an aggregation method.
+#'                     TRUE: return monthly data (if available). Month indices are renamed from numeric values
+#'                     to abbreviated month names.
+#'                     FALSE: return the data without modification (default; appropriate for yearly inputs).
+#'                     "FALSE:sum": aggregate monthly data to yearly values using the sum across months
+#'                     (appropriate for fluxes, e.g. NPP/GPP/runoff/precipitation).
+#'                     "FALSE:mean": aggregate monthly data to yearly values using the arithmetic mean across
+#'                     months (appropriate for stocks/pools, e.g. soil carbon, biomass stocks).
+#'                     If monthly = TRUE but no month dimension exists, an error is thrown.
 #'
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #'
@@ -23,14 +34,16 @@
 #' }
 #'
 calcLPJmLTransform <- function(lpjmlversion = "lpjml5.9.5-m1",
-                               climatetype = "MRI-ESM2-0:ssp370",
-                               subtype     = "pnv:soilc", subdata = NULL,
-                               stage       = "smoothed:cut") {
+                               climatetype  = "MRI-ESM2-0:ssp370",
+                               subtype      = "pnv:soilc",
+                               subdata      = NULL,
+                               stage        = "smoothed:cut",
+                               monthly      = FALSE) {
 
   ########## CONFIGURE READ START ##########
   cfg        <- toolLPJmLScenario(lpjmlversion = lpjmlversion,
-                                  climatetype = climatetype,
-                                  subtype = subtype)
+                                  climatetype  = climatetype,
+                                  subtype      = subtype)
   readinName <- paste(cfg$version, cfg$climatetype, cfg$subtype, sep = ":")
   readinHist <- gsub("ssp[0-9]{3}", "historical", readinName)
 
@@ -40,13 +53,10 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.9.5-m1",
 
   if (!is.null(getItems(x, dim = 2))) {
     if (!grepl("historical", cfg$climatetype)) {
-      # select year for cutting of the time series
       cutYr <- 1951
-      # read in LPJmL data from historical run and combine with scenario run
       x <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
                  x)
     } else {
-      # select year for cutting of the time series
       cutYr <- 1930
     }
   }
@@ -72,12 +82,54 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.9.5-m1",
   # need to be transformed to tDM)
 
   if (grepl("gpp|npp|harvestc", subtype)) {
-    # Transformation from carbon to dry matter content
-    # (from tC/ha to tDM/ha)
+    # Transformation from carbon to dry matter content (from tC/ha to tDM/ha)
     x    <- x / 0.45
     unit <- "tDM/ha"
   }
   ########## DATA TRANSFORMATION STOP ###############
+
+  ######### (optional) monthly handling / aggregation ########
+  hasMonth <- any(names(dimnames(x)) == "month")
+
+  # If monthly = TRUE but no month dimension
+  if (isTRUE(monthly) && !hasMonth) {
+    stop("monthly = TRUE requested, but input data do not contain a 'month' dimension.")
+  }
+
+  if (hasMonth) {
+
+    # If monthly values exist and user requested monthly object
+    if (isTRUE(monthly)) {
+      # rename month labels
+      mi <- suppressWarnings(as.integer(getItems(x, dim = "month")))
+      if (anyNA(mi)) {
+        stop("Month labels are not numeric (1-12); cannot rename automatically.")
+      }
+      getItems(x, dim = "month") <- tolower(month.abb)[mi]
+
+    } else {
+      # If aggregation requested, method must be chosen by user
+      parts  <- strsplit(as.character(monthly), ":", fixed = TRUE)[[1]]
+      method <- if (length(parts) >= 2) tolower(parts[2]) else NA_character_
+
+      if (is.na(method)) {
+        # default: do nothing (useful if data are already yearly)
+      } else if (grepl("sum", method)) {
+        # fluxes should be summed
+        x <- dimSums(x, dim = "month")
+      } else if (grepl("mean", method)) {
+        # stocks should be averaged (unweighted mean over available months)
+        nmonths <- length(getItems(x, dim = "month"))
+        x <- dimSums(x, dim = "month") / nmonths
+      } else {
+        stop("Please specify how monthly values should be aggregated to yearly values ('sum' or 'mean').")
+      }
+    }
+  }
+
+  ########## Check and replace negative values   ##########
+  toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative", falseStatus = "warn")
+  x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
 
   ########## STAGE HANDELING START  ###############
   if (grepl("smoothed", stage)) {
@@ -94,6 +146,7 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.9.5-m1",
               unit         = unit,
               min          = 0,
               description  = paste0("Output from LPJmL (", subtype, ") for ",
-                                    lpjmlversion, " and ", climatetype, " at stage: ", stage, "."),
+                                    lpjmlversion, " and ", climatetype,
+                                    " at stage: ", stage, "."),
               isocountries = FALSE))
 }

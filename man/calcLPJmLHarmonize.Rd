@@ -8,7 +8,8 @@ calcLPJmLHarmonize(
   lpjmlversion = "lpjml5.9.5-m1",
   climatetype = "MRI-ESM2-0:ssp370",
   subtype = "pnv:soilc",
-  subdata = NULL
+  subdata = NULL,
+  monthly = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,12 @@ calcLPJmLHarmonize(
 This argument can be used to split up the data in smaller objects
 where only a sub-set of the data is needed or
 for better handling where otherwise memory issues would occur due to the object size.}
+
+\item{monthly}{Boolean indicating whether monthly data (if available)
+should be returned (TRUE) or whether it should be aggregated to yearly values (FALSE).
+If FALSE: Need to indicate aggregation method, e.g.,
+"sum" (for fluxes), "mean" (for stocks/pools);
+Argument should be separated by ":" (e.g., "FALSE:sum")}
 }
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.

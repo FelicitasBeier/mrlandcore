@@ -4,10 +4,15 @@
 #' @param lpjmlversion Switch between LPJmL versions (including addons for further version specification)
 #' @param climatetype  Switch between different climate scenarios
 #' @param subtype      Switch between different LPJmL output variables as specified in readLPJmL
-#' @param subdata Selection of subitems of object.
-#'                This argument can be used to split up the data in smaller objects
-#'                where only a sub-set of the data is needed or
-#'                for better handling where otherwise memory issues would occur due to the object size.
+#' @param subdata      Selection of subitems of object.
+#'                     This argument can be used to split up the data in smaller objects
+#'                     where only a sub-set of the data is needed or
+#'                     for better handling where otherwise memory issues would occur due to the object size.
+#' @param monthly      Boolean indicating whether monthly data (if available)
+#'                     should be returned (TRUE) or whether it should be aggregated to yearly values (FALSE).
+#'                     If FALSE: Need to indicate aggregation method, e.g.,
+#'                     "sum" (for fluxes), "mean" (for stocks/pools);
+#'                     Argument should be separated by ":" (e.g., "FALSE:sum")
 #'
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #'
@@ -25,7 +30,8 @@
 
 calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
                                climatetype = "MRI-ESM2-0:ssp370",
-                               subtype = "pnv:soilc", subdata = NULL) {
+                               subtype = "pnv:soilc", subdata = NULL,
+                               monthly     = FALSE) {
 
   ### Question (Jan): calcLPJmLHarmonize is very slow. Can we do anything to improve the performance?
 
@@ -37,6 +43,7 @@ calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     x <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                     climatetype = cfg$climatetype, subtype = subtype,
                     subdata = subdata, stage = "smoothed:cut",
+                    monthly = monthly,
                     aggregate = FALSE, supplementary = TRUE)
     # extract unit from LPJmL data
     unit <- x$unit
@@ -51,14 +58,16 @@ calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
     baseline <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                            climatetype = cfg$baselineHist, subtype = subtype,
                            subdata = subdata, stage = "smoothed:cut",
+                           monthly = monthly,
                            aggregate = FALSE, supplementary = TRUE)
-    unit <- baseline$unit
+    unit     <- baseline$unit
     baseline <- baseline$x
 
     # read in future scenario data for subtype
     x <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                     climatetype = cfg$baselineGcm, subtype = subtype,
-                    subdata = subdata, stage = "smoothed:cut", aggregate = FALSE)
+                    subdata = subdata, stage = "smoothed:cut",
+                    monthly = monthly, aggregate = FALSE)
 
     # harmonize default future scenario to default baseline until
     # default historical year
@@ -77,7 +86,8 @@ calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
       # read in future scenario data for subtype
       x <- calcOutput("LPJmLTransform", lpjmlversion = cfg$readinVersion,
                       climatetype = cfg$climatetype, subtype = subtype,
-                      subdata = subdata, stage = "smoothed:cut", aggregate = FALSE)
+                      subdata = subdata, stage = "smoothed:cut",
+                      monthly = monthly, aggregate = FALSE)
       # harmonize chosen climate scenario to default baseline scenario
       out <- toolHarmonize2Baseline(x, harmonizedScen, ref_year = cfg$refYearGcm)
     }
