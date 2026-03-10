@@ -79,15 +79,13 @@ calcNPPyearly <- function(subtype = "preind",
   #############################
   ### Weight for aggregation ##
   #############################
-  ### To Do: Discuss with Jens / Isabelle: What would be a good weight for
-  ###        spatial aggregation from grid cell to cluster?
-  ###        I'm thinking land area? (either form LPJmL or LUH3)
-
-  # Total land area according to LUH3 in iniyear (constant over time)
-  landarea <- setYears(dimSums(calcOutput("LUH3", yrs = 1995,
-                                          landuseTypes = "LUH3", irrigation = FALSE,
-                                          cellular = TRUE,  aggregate = FALSE),
-                               dim = 3), NULL)
+  # Total land area according to LPJmL in iniyear (constant over time and scenarios)
+  landarea <- setYears(calcOutput("LPJmLTransform", lpjmlversion = lpjml,
+                                  climatetype = "GSWP3-W5E5:historical",
+                                  subtype     = "pnv:land_area", subdata = NULL,
+                                  stage       = "raw",
+                                  monthly     = FALSE,
+                                  aggregate   = FALSE)[, "y1995", ], NULL)
 
   return(list(x            = npp,
               weight       = landarea,

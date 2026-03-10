@@ -128,7 +128,14 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.9.5-m1",
   }
 
   ########## Check and replace negative values   ##########
-  toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative", falseStatus = "warn")
+  ### To Do: Discuss with Kristine, Mike, Jens: Keep this warning here and exclude certain inputs
+  ###        where negatives are allowed? (e.g., NPP?)
+  # For NPP negative values are possible and will be corrected (set to zero).
+  # For other inputs warning would be returned
+  if (!grepl("npp", subtype)) {
+    toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative",
+                   falseStatus = "warn")
+  }
   x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
 
   ########## STAGE HANDELING START  ###############
