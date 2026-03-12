@@ -7,6 +7,7 @@
 calcCroparea(
   sectoral = "kcr",
   physical = TRUE,
+  fallow = FALSE,
   cellular = FALSE,
   irrigation = FALSE,
   selectyears = "past",
@@ -17,6 +18,8 @@ calcCroparea(
 \item{sectoral}{"kcr" MAgPIE items, and "lpj" LPJmL items}
 
 \item{physical}{if TRUE the sum over all crops agrees with the cropland area per country}
+
+\item{fallow}{if TRUE fallow land is returned as element in crop set}
 
 \item{cellular}{if TRUE: calculates cellular MAgPIE crop area for all magpie croptypes.
 Crop area from LUH3 crop types (c3ann, c4ann, c3per, c4per, cnfx)
