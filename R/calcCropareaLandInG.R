@@ -49,7 +49,7 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
 
   ### Calculations ###
   # read in fallow land (for check below)
-  fallow <- calcOutput("FallowLand", aggregate = FALSE)
+  fallow <- calcOutput("FallowLandInG", aggregate = FALSE)
 
   # year selection
   if (any(selectyears == "all")) {

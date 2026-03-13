@@ -2,7 +2,8 @@
 #' @description returns croparea
 #'
 #' @param sectoral    "kcr" MAgPIE items, and "lpj" LPJmL items
-#' @param physical    if TRUE the sum over all crops agrees with the cropland area per country
+#' @param physical    if TRUE it returns the physical area, with cropareas of multicropping systems being
+#'                    scaled to match physical areas, if FALSE the area harvested is returned
 #' @param fallow      if TRUE fallow land is returned as element in crop set
 #' @param cellular    if TRUE: calculates cellular MAgPIE crop area for all magpie croptypes.
 #'                    Crop area from LUH3 crop types (c3ann, c4ann, c3per, c4per, cnfx)
@@ -31,14 +32,18 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
                            cellular = TRUE, irrigation = irrigation,
                            aggregate = FALSE)
 
+    selectyears <- getYears(croparea, as.integer = TRUE)
+
+    # Extend data until 2020
+    if (!any(grepl("y2020", getItems(croparea, dim = 2)))) {
+      selectyears <- c(selectyears, (tail(selectyears, 1) + 1):2020)
+      croparea <- toolHoldConstant(croparea, years = selectyears)
+    }
+
     # for correction: read LUH3 cropland area
     # Note: Can be removed when LandInG update complete
     luh3 <- calcOutput("LUH3", landuseTypes = "magpie", irrigation = FALSE,
-                       cellular = TRUE, aggregate = FALSE)
-
-    selectyears <- intersect(getItems(croparea, dim = 2), getItems(luh3, dim = 2))
-    croparea <- croparea[, selectyears, ]
-    luh3     <- luh3[, selectyears, ]
+                       cellular = TRUE, aggregate = FALSE, yrs = selectyears)
 
     # description of data to be returned
     description <- paste0(ifelse(physical, "physical ", "harvested "),
@@ -50,9 +55,19 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
     # Note: Correction necessary until LandInG data set is updated to LUH3
     physCroparea <- dimSums(calcOutput("CropareaLandInG", sectoral = sectoral, physical = TRUE,
                                        cellular = TRUE, irrigation = FALSE,
-                                       aggregate = FALSE), dim = "crop")[, selectyears, ]
-    fallowLand   <- calcOutput("FallowLand", cellular = TRUE,
-                               aggregate = FALSE)[, selectyears, ]
+                                       aggregate = FALSE), dim = "crop")
+    fallowLand   <- calcOutput("FallowLandInG", cellular = TRUE,
+                               aggregate = FALSE)
+    # Extend data until 2020
+    if (!any(grepl("y2020", getItems(physCroparea, dim = 2)))) {
+      physCroparea <- toolHoldConstant(physCroparea, years = selectyears)
+    }
+    if (!any(grepl("y2020", getItems(fallowLand, dim = 2)))) {
+      fallowLand <- toolHoldConstant(fallowLand, years = selectyears)
+    }
+
+    physCroparea <- physCroparea[, selectyears, ]
+    fallowLand <- fallowLand[, selectyears, ]
 
     luh3Cropland    <- collapseNames(luh3[, , "crop"])
     landingCropland <- physCroparea + fallowLand
@@ -81,13 +96,18 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
     physShareCountry           <- physCropareaISO / landingCroplandISO
     cropareaToPhysRatioCountry <- cropareaISO / physCropareaISO
 
-    fallowShareGLO         <- fallowLandGLO / landingCroplandGLO
-    physShareGLO           <- physCropareaGLO / landingCroplandGLO
-    cropareaToPhysRatioGLO <- cropareaGLO / physCropareaGLO
+    fallowShareGLO <- fallowShareCountry * NA
+    physShareGLO <- fallowShareCountry * NA
+    cropareaToPhysRatioGLO <- cropareaToPhysRatioCountry * NA
 
-    fallowShareCountry[is.nan(fallowShareCountry)] <- fallowShareGLO
-    physShareCountry[is.nan(physShareCountry)] <- physShareGLO
-    cropareaToPhysRatioCountry[is.nan(cropareaToPhysRatioCountry)] <- cropareaToPhysRatioGLO
+    fallowShareGLO[, , ]         <- fallowLandGLO / landingCroplandGLO
+    physShareGLO[, , ]           <- physCropareaGLO / landingCroplandGLO
+    cropareaToPhysRatioGLO[, , ] <- cropareaGLO / physCropareaGLO
+
+    fallowShareCountry[is.nan(fallowShareCountry)] <- fallowShareGLO[is.nan(fallowShareCountry)]
+    physShareCountry[is.nan(physShareCountry)] <- physShareGLO[is.nan(physShareCountry)]
+    cropareaToPhysRatioCountry[is.nan(cropareaToPhysRatioCountry)] <-
+      cropareaToPhysRatioGLO[is.nan(cropareaToPhysRatioCountry)]
 
     # expand to grid level
     fallowShareCountryGrid         <- magpie_expand(fallowShareCountry, ref = fallowLand)
@@ -141,11 +161,6 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
     } else {
       croparea    <- cropareaCalibrated
       description <- paste0(description, " excluding fallow land.")
-    }
-
-    # Extend data until 2020
-    if (!any(grepl("y2020", getItems(croparea, dim = 2)))) {
-      croparea <- toolHoldConstant(croparea, years = c(getItems(croparea, dim = 2), "y2020"))
     }
 
     # Aggregation to iso-level

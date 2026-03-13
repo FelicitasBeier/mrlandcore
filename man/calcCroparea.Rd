@@ -16,7 +16,8 @@ calcCroparea(
 \arguments{
 \item{sectoral}{"kcr" MAgPIE items, and "lpj" LPJmL items}
 
-\item{physical}{if TRUE the sum over all crops agrees with the cropland area per country}
+\item{physical}{if TRUE it returns the physical area, with cropareas of multicropping systems being
+scaled to match physical areas, if FALSE the area harvested is returned}
 
 \item{fallow}{if TRUE fallow land is returned as element in crop set}
 
