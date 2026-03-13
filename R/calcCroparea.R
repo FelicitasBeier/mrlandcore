@@ -143,6 +143,11 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
       description <- paste0(description, " excluding fallow land.")
     }
 
+    # Extend data until 2020
+    if (!any(grepl("y2020", getItems(croparea, dim = 2)))) {
+      croparea <- toolHoldConstant(croparea, years = c(getItems(croparea, dim = 2), "y2020"))
+    }
+
     # Aggregation to iso-level
     if (!cellular) {
       # aggregate to countries
