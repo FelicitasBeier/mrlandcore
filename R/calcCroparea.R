@@ -23,7 +23,7 @@
 #' @importFrom magpiesets findset
 
 calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE, cellular = FALSE,
-                         irrigation = FALSE, selectyears = "past", datasource = "LandInG") {
+                         irrigation = FALSE, selectyears = "all", datasource = "LandInG") {
 
   if (selectyears == "past") {
     selectyears <- findset("past")

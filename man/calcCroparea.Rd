@@ -10,7 +10,7 @@ calcCroparea(
   fallow = FALSE,
   cellular = FALSE,
   irrigation = FALSE,
-  selectyears = "past",
+  selectyears = "all",
   datasource = "LandInG"
 )
 }
