@@ -1,4 +1,4 @@
-#' @title calcFallowLand
+#' @title calcFallowLandInG
 #' @description
 #' Calculates fallow land on grid cell level,
 #' based on physical cropland extend and harvested area output
@@ -16,12 +16,12 @@
 #' \code{\link{readLandInG}}
 #' @examples
 #' \dontrun{
-#' calcOutput("FallowLand")
+#' calcOutput("FallowLandInG")
 #' }
 #' @importFrom magclass dimSums mbind
 #' @importFrom madrat toolConditionalReplace
 #'
-calcFallowLand <- function(cellular = TRUE) {
+calcFallowLandInG <- function(cellular = TRUE) {
 
   harvestedArea <- readSource("LandInG", subtype = "harvestedArea")
 
