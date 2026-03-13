@@ -11,7 +11,6 @@
 #'                    specific LUH crop type to divide into MAgPIE crop types.
 #' @param irrigation  If true: cellular areas are returned separated
 #'                    into irrigated and rainfed (see setup in calcLUH3)
-#' @param selectyears Vector of years to be returned
 #' @param datasource  Croparea data source (LandInG or FAOLUH).
 #'                    Datasource FAOLUH is deprecated and is only kept for
 #'                    backwards compatibility.
@@ -22,18 +21,24 @@
 #'
 #' @importFrom magpiesets findset
 
-calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE, cellular = FALSE,
-                         irrigation = FALSE, selectyears = "all", datasource = "LandInG") {
-
-  if (selectyears == "past") {
-    selectyears <- findset("past")
-  }
+calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
+                         cellular = FALSE,
+                         irrigation = FALSE, datasource = "LandInG") {
 
   if (datasource == "LandInG") {
     # read in croparea
     croparea <- calcOutput("CropareaLandInG", sectoral = sectoral, physical = physical,
                            cellular = TRUE, irrigation = irrigation,
-                           selectyears = selectyears, aggregate = FALSE)
+                           aggregate = FALSE)
+
+    # for correction: read LUH3 cropland area
+    # Note: Can be removed when LandInG update complete
+    luh3 <- calcOutput("LUH3", landuseTypes = "magpie", irrigation = FALSE,
+                       cellular = TRUE, aggregate = FALSE)
+
+    selectyears <- intersect(getItems(croparea, dim = 2), getItems(luh3, dim = 2))
+    croparea <- croparea[, selectyears, ]
+    luh3     <- luh3[, selectyears, ]
 
     # description of data to be returned
     description <- paste0(ifelse(physical, "physical ", "harvested "),
@@ -45,13 +50,13 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE, cell
     # Note: Correction necessary until LandInG data set is updated to LUH3
     physCroparea <- dimSums(calcOutput("CropareaLandInG", sectoral = sectoral, physical = TRUE,
                                        cellular = TRUE, irrigation = FALSE,
-                                       selectyears = selectyears, aggregate = FALSE), dim = "crop")
-    fallowLand   <- calcOutput("FallowLand", cellular = TRUE, aggregate = FALSE)[, selectyears, ]
-    luh3 <- calcOutput("LUH3", landuseTypes = "magpie", irrigation = FALSE,
-                       cellular = TRUE, yrs = selectyears, aggregate = FALSE)
-    luh3Cropland <- collapseNames(luh3[, , "crop"])
+                                       aggregate = FALSE), dim = "crop")[, selectyears, ]
+    fallowLand   <- calcOutput("FallowLand", cellular = TRUE,
+                               aggregate = FALSE)[, selectyears, ]
+
+    luh3Cropland    <- collapseNames(luh3[, , "crop"])
     landingCropland <- physCroparea + fallowLand
-    luh3Total    <- dimSums(luh3, dim = "landuse")
+    luh3Total       <- dimSums(luh3, dim = "landuse")
 
     # cell-specific scaling factor from LandInG cropland to LUH3 cropland
     scalingFactor <- luh3Cropland / landingCropland
@@ -94,8 +99,12 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE, cell
     fallowLandCalibrated <- fallowLand * scalingFactor
 
     # replace NaNs from 0/0 by zero
-    cropareaCalibrated[is.nan(cropareaCalibrated)]     <- 0
-    fallowLandCalibrated[is.nan(fallowLandCalibrated)] <- 0
+    if (any(is.nan(cropareaCalibrated))) {
+      cropareaCalibrated[is.nan(cropareaCalibrated)] <- 0
+    }
+    if (any(is.nan(fallowLandCalibrated))) {
+      fallowLandCalibrated[is.nan(fallowLandCalibrated)] <- 0
+    }
 
     # Overwrite where fallback option needed
     physCropareaFallback <- luh3Cropland * physShareCountryGrid
@@ -127,10 +136,10 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE, cell
 
     # return croparea (and optionally fallow land)
     if (fallow) {
-      croparea <- mbind(cropareaCalibrated, fallowLandCalibrated)
+      croparea    <- mbind(cropareaCalibrated, fallowLandCalibrated)
       description <- paste0(description, " including fallow land.")
     } else {
-      croparea <- cropareaCalibrated
+      croparea    <- cropareaCalibrated
       description <- paste0(description, " excluding fallow land.")
     }
 
@@ -151,7 +160,6 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE, cell
     croparea <- calcOutput("CropareaFAOLUH", sectoral = sectoral, physical = physical,
                            cellular = cellular, irrigation = irrigation,
                            aggregate = FALSE)
-    croparea <- croparea[, selectyears, ]
 
     # description of data to be returned
     description <- paste0(ifelse(physical, "physical ", "harvested "),

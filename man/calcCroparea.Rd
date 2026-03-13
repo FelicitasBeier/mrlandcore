@@ -10,7 +10,6 @@ calcCroparea(
   fallow = FALSE,
   cellular = FALSE,
   irrigation = FALSE,
-  selectyears = "all",
   datasource = "LandInG"
 )
 }
@@ -29,8 +28,6 @@ specific LUH crop type to divide into MAgPIE crop types.}
 
 \item{irrigation}{If true: cellular areas are returned separated
 into irrigated and rainfed (see setup in calcLUH3)}
-
-\item{selectyears}{Vector of years to be returned}
 
 \item{datasource}{Croparea data source (LandInG or FAOLUH).
 Datasource FAOLUH is deprecated and is only kept for
