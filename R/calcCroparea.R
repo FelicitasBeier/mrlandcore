@@ -27,152 +27,127 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
                          irrigation = FALSE, datasource = "LandInG") {
 
   if (datasource == "LandInG") {
-    # read in croparea
-    croparea <- calcOutput("CropareaLandInG", sectoral = sectoral, physical = physical,
-                           cellular = TRUE, irrigation = irrigation,
-                           aggregate = FALSE)
-
-    selectyears <- getYears(croparea, as.integer = TRUE)
-
-    # Extend data until 2020
-    if (!any(grepl("y2020", getItems(croparea, dim = 2)))) {
-      selectyears <- c(selectyears, (tail(selectyears, 1) + 1):2020)
-      croparea <- toolHoldConstant(croparea, years = selectyears)
-    }
-
-    # for correction: read LUH3 cropland area
-    # Note: Can be removed when LandInG update complete
-    luh3 <- calcOutput("LUH3", landuseTypes = "magpie", irrigation = FALSE,
-                       cellular = TRUE, aggregate = FALSE, yrs = selectyears)
-
     # description of data to be returned
     description <- paste0(ifelse(physical, "physical ", "harvested "),
                           "croparea from LandInG data set")
-
-    ############################################################
-    ########## Correction to match LUH cropland area  ##########
-    ############################################################
-    # Note: Correction necessary until LandInG data set is updated to LUH3
-    physCroparea <- dimSums(calcOutput("CropareaLandInG", sectoral = sectoral, physical = TRUE,
-                                       cellular = TRUE, irrigation = FALSE,
-                                       aggregate = FALSE), dim = "crop")
-    fallowLand   <- calcOutput("FallowLandInG", cellular = TRUE,
-                               aggregate = FALSE)
-    # Extend data until 2020
-    if (!any(grepl("y2020", getItems(physCroparea, dim = 2)))) {
-      physCroparea <- toolHoldConstant(physCroparea, years = selectyears)
-    }
-    if (!any(grepl("y2020", getItems(fallowLand, dim = 2)))) {
-      fallowLand <- toolHoldConstant(fallowLand, years = selectyears)
-    }
-
-    physCroparea <- physCroparea[, selectyears, ]
-    fallowLand <- fallowLand[, selectyears, ]
-
-    luh3Cropland    <- collapseNames(luh3[, , "crop"])
-    landingCropland <- physCroparea + fallowLand
-    luh3Total       <- dimSums(luh3, dim = "landuse")
-
-    # cell-specific scaling factor from LandInG cropland to LUH3 cropland
-    scalingFactor <- luh3Cropland / landingCropland
-
-    # fallback option for grid cells without LandInG cropland, but LUH3 cropland
-    fallbackCells <- landingCropland == 0 & luh3Cropland > 0
-    zeroCells     <- landingCropland == 0 & luh3Cropland == 0
-
-    # country and global aggregates
-    physCropareaISO      <- dimSums(physCroparea, dim = c("x", "y"))
-    fallowLandISO        <- dimSums(fallowLand, dim = c("x", "y"))
-    landingCroplandISO   <- dimSums(landingCropland, dim = c("x", "y"))
-    cropareaISO          <- dimSums(croparea, dim = c("x", "y"))
-
-    physCropareaGLO      <- dimSums(physCroparea, dim = 1)
-    fallowLandGLO        <- dimSums(fallowLand, dim = 1)
-    landingCroplandGLO   <- dimSums(landingCropland, dim = 1)
-    cropareaGLO          <- dimSums(croparea, dim = 1)
-
-    # country and global shares
-    fallowShareCountry         <- fallowLandISO / landingCroplandISO
-    physShareCountry           <- physCropareaISO / landingCroplandISO
-    cropareaToPhysRatioCountry <- cropareaISO / physCropareaISO
-
-    fallowShareGLO <- fallowShareCountry * NA
-    physShareGLO <- fallowShareCountry * NA
-    cropareaToPhysRatioGLO <- cropareaToPhysRatioCountry * NA
-
-    fallowShareGLO[, , ]         <- fallowLandGLO / landingCroplandGLO
-    physShareGLO[, , ]           <- physCropareaGLO / landingCroplandGLO
-    cropareaToPhysRatioGLO[, , ] <- cropareaGLO / physCropareaGLO
-
-    fallowShareCountry[is.nan(fallowShareCountry)] <- fallowShareGLO[is.nan(fallowShareCountry)]
-    physShareCountry[is.nan(physShareCountry)] <- physShareGLO[is.nan(physShareCountry)]
-    cropareaToPhysRatioCountry[is.nan(cropareaToPhysRatioCountry)] <-
-      cropareaToPhysRatioGLO[is.nan(cropareaToPhysRatioCountry)]
-
-    # expand to grid level
-    fallowShareCountryGrid         <- magpie_expand(fallowShareCountry, ref = fallowLand)
-    physShareCountryGrid           <- magpie_expand(physShareCountry, ref = fallowLand)
-    cropareaToPhysRatioCountryGrid <- magpie_expand(cropareaToPhysRatioCountry, ref = croparea)
-
-    # Apply scaling factor to croparea and fallow land
-    cropareaCalibrated   <- croparea * scalingFactor
-    fallowLandCalibrated <- fallowLand * scalingFactor
-
-    # replace NaNs from 0/0 by zero
-    if (any(is.nan(cropareaCalibrated))) {
-      cropareaCalibrated[is.nan(cropareaCalibrated)] <- 0
-    }
-    if (any(is.nan(fallowLandCalibrated))) {
-      fallowLandCalibrated[is.nan(fallowLandCalibrated)] <- 0
-    }
-
-    # Overwrite where fallback option needed
-    physCropareaFallback <- luh3Cropland * physShareCountryGrid
-    fallowLandFallback   <- luh3Cropland * fallowShareCountryGrid
-    cropareaFallback     <- physCropareaFallback * cropareaToPhysRatioCountryGrid
-
-    fallowLandCalibrated[fallbackCells] <- fallowLandFallback[fallbackCells]
-    cropareaCalibrated[fallbackCells]   <- cropareaFallback[fallbackCells]
-
-    # ensure exact zero where both LUH3 and LandInG are zero
-    fallowLandCalibrated[zeroCells] <- 0
-    cropareaCalibrated[zeroCells]   <- 0
-
-    # return calibrated croparea with calibrated fallow land
-    fallowLandCalibrated <- setNames(object = fallowLandCalibrated, "fallow")
-    getSets(fallowLandCalibrated) <- c("x", "y", "iso", "year", "crop")
-
-    ### Check physical cropland matching ###
-    if (physical) {
-      # Sanity check (physical croparea + fallow land should not exceed total land area in LUH3)
-      if (any((dimSums(cropareaCalibrated, dim = "crop") + fallowLandCalibrated) - luh3Total > 0)) {
-        stop("Croparea is larger than total land area in LUH3.")
+    if (irrigation && cellular && fallow) {
+      # read in croparea
+      croparea <- calcOutput("CropareaLandInG", sectoral = sectoral, physical = TRUE,
+                             cellular = TRUE, irrigation = TRUE,
+                             aggregate = FALSE)
+      selectyears <- getYears(croparea, as.integer = TRUE)
+      # Extend data until 2020
+      if (!any(grepl("y2020", getItems(croparea, dim = 2)))) {
+        selectyears <- c(selectyears, (tail(selectyears, 1) + 1):2020)
+        croparea <- toolHoldConstant(croparea, years = selectyears)
       }
+
+      if (!physical) {
+        # calculate crop and irrigation-specific multicropping factor
+        cropareaMulti <- calcOutput("CropareaLandInG", sectoral = sectoral, physical = FALSE,
+                                    cellular = TRUE, irrigation = TRUE,
+                                    aggregate = FALSE)
+
+        if (!any(grepl("y2020", getItems(cropareaMulti, dim = 2)))) {
+          cropareaMulti <- toolHoldConstant(cropareaMulti, years = selectyears)
+        }
+
+        multiFactor <- cropareaMulti / croparea
+        multiFactor <- ifelse(test = is.nan(multiFactor), 1, multiFactor)
+        multiFactor <- ifelse(test = multiFactor > 2, 2, multiFactor)
+        multiFactor <- add_columns(x = multiFactor, addnm = "fallow",
+                                   dim = "crop", fill = 1)
+
+      }
+
+      fallowLand   <- calcOutput("FallowLandInG", cellular = TRUE,
+                                 aggregate = FALSE)
+
+      if (!any(grepl("y2020", getItems(fallowLand, dim = 2)))) {
+        fallowLand <- toolHoldConstant(fallowLand, years = selectyears)
+      }
+
+      ### Integrate fallow into physical land
+      # implicit assumption: fallow is the same in physical and harvested area,
+      # as multicropping with fallow is not multicropping
+
+      fallowLand <- setNames(fallowLand[, selectyears, ], "fallow")
+
+      totalCroparea <- dimSums(croparea, dim = "crop")
+      irrigationShare     <- (totalCroparea[, , c("rainfed", "irrigated")] /
+                                dimSums(totalCroparea, dim = "irrigation"))
+      irrigationShare <- ifelse(is.nan(irrigationShare), 0, irrigationShare)
+      fallowLandIrrigated <- irrigationShare * fallowLand
+
+      cropareaWithFallow <- mbind(croparea, fallowLandIrrigated)
+
+      ### Correction to match LUH cropland area
+      # Note: Correction necessary to make LandInG match LUH3 land classes
+
+      # calculate area shares
+      cropareaShareGrid <- cropareaWithFallow / dimSums(cropareaWithFallow, dim = c("irrigation", "crop"))
+      cropareaShareIso <- dimSums(cropareaWithFallow, dim = c("x", "y")) /
+        dimSums(cropareaWithFallow, dim = c("x", "y", "irrigation", "crop"))
+      cropareaShareGlo <- dimSums(cropareaWithFallow, dim = 1) /
+        dimSums(cropareaWithFallow, dim = c("x", "y", "iso", "irrigation", "crop"))
+      cropareaShareIso <- ifelse(is.nan(cropareaShareIso), cropareaShareGlo, cropareaShareIso)
+      cropareaShareGrid <- ifelse(is.nan(cropareaShareGrid), cropareaShareIso, cropareaShareGrid)
+
+      # for correction: read LUH3 cropland area
+      luh3 <- calcOutput("LUH3", landuseTypes = "magpie", irrigation = FALSE,
+                         cellular = TRUE, aggregate = FALSE, yrs = selectyears)
+
+      luh3physCropland    <- collapseNames(luh3[, , "crop"])
+
+      # resclae
+      cropareaCalibrated <- cropareaShareGrid * luh3physCropland
+
+      ### Check physical cropland matching ###
       # Sanity check (physical croparea + fallow land should match total cropland in LUH3 after calibration)
-      if (any(round(dimSums(cropareaCalibrated, dim = "crop") + fallowLandCalibrated - luh3Cropland, 6) != 0)) {
+      if (any(round(dimSums(cropareaCalibrated, dim = c("crop", "irrigation")) - luh3physCropland, 6) != 0)) {
         stop("Calibrated physical croparea + fallow land does not match LUH3 cropland.")
+      }
+
+      if (!physical) {
+        cropareaCalibrated <- cropareaCalibrated * multiFactor
+      }
+
+      croparea    <- cropareaCalibrated
+      description <- paste0(description, " including fallow land.")
+
+    } else {
+      # To speed up, aggregation is done with incursively.
+      croparea <- calcOutput("Croparea", aggregate = FALSE, sectoral = sectoral,
+                             physical = physical, fallow = TRUE,
+                             cellular = TRUE, irrigation = TRUE,
+                             datasource = "LandInG")
+      # Aggregation to iso-level and wrt irrigation
+      if (!cellular) {
+        # aggregate to countries
+        croparea <- dimSums(croparea, dim = c("x", "y"))
+        # fill missing countries with 0
+        croparea <- toolConditionalReplace(x = toolCountryFill(croparea),
+                                           conditions = "is.na()", replaceby = 0)
+      }
+      if (!irrigation) {
+        # aggregate to countries
+        croparea <- dimSums(croparea, dim = c("irrigation"))
       }
     }
 
     # return croparea (and optionally fallow land)
-    if (fallow) {
-      croparea    <- mbind(cropareaCalibrated, fallowLandCalibrated)
-      description <- paste0(description, " including fallow land.")
-    } else {
-      croparea    <- cropareaCalibrated
+    if (!fallow) {
+      croparea <- croparea[, , "fallow", invert = TRUE]
       description <- paste0(description, " excluding fallow land.")
-    }
-
-    # Aggregation to iso-level
-    if (!cellular) {
-      # aggregate to countries
-      croparea <- dimSums(croparea, dim = c("x", "y"))
-      # fill missing countries with 0
-      croparea <- toolConditionalReplace(x = toolCountryFill(croparea),
-                                         conditions = "is.na()", replaceby = 0)
+    } else {
+      description <- paste0(description, " including fallow land.")
     }
 
   } else if (datasource == "FAOLUH") {
+
+    if (fallow) {
+      stop("fallow not implemented for FAOLUH")
+    }
     ### For backwards compatibility only ###
     # This chunk can be deleted when croparea update is completed.
 
