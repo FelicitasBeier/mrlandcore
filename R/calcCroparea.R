@@ -81,8 +81,7 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
 
       cropareaWithFallow <- mbind(croparea, fallowLandIrrigated)
 
-      ### Correction to match LUH cropland area
-      # Note: Correction necessary to make LandInG match LUH3 land classes
+      ### Correction to match LanduseInitialisation cropland area
 
       # calculate area shares
       cropareaShareGrid <- cropareaWithFallow / dimSums(cropareaWithFallow, dim = c("irrigation", "crop"))
@@ -93,19 +92,20 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
       cropareaShareIso <- ifelse(is.nan(cropareaShareIso), cropareaShareGlo, cropareaShareIso)
       cropareaShareGrid <- ifelse(is.nan(cropareaShareGrid), cropareaShareIso, cropareaShareGrid)
 
-      # for correction: read LUH3 cropland area
-      luh3 <- calcOutput("LUH3", landuseTypes = "magpie", irrigation = FALSE,
-                         cellular = TRUE, aggregate = FALSE, yrs = selectyears)
+      # for correction: read LanduseInitialisation cropland area
+      landuseIni <- calcOutput(type = "LanduseInitialisation", aggregate = FALSE,
+                               cellular = TRUE, selectyears = selectyears)
 
-      luh3physCropland    <- collapseNames(luh3[, , "crop"])
+      landuseIniCrop    <- collapseNames(landuseIni[, , "crop"])
 
       # resclae
-      cropareaCalibrated <- cropareaShareGrid * luh3physCropland
+      cropareaCalibrated <- cropareaShareGrid * landuseIniCrop
 
       ### Check physical cropland matching ###
-      # Sanity check (physical croparea + fallow land should match total cropland in LUH3 after calibration)
-      if (any(round(dimSums(cropareaCalibrated, dim = c("crop", "irrigation")) - luh3physCropland, 6) != 0)) {
-        stop("Calibrated physical croparea + fallow land does not match LUH3 cropland.")
+      # Sanity check (physical croparea + fallow land should match total cropland
+      # in LanduseInitialisation after calibration)
+      if (any(round(dimSums(cropareaCalibrated, dim = c("crop", "irrigation")) - landuseIniCrop, 6) != 0)) {
+        stop("Calibrated physical croparea + fallow land does not match LanduseInitialisation cropland.")
       }
 
       if (!physical) {
