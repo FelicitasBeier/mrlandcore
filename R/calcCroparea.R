@@ -54,7 +54,7 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
 
         multiFactor <- cropareaMulti / croparea
         multiFactor <- ifelse(test = is.nan(multiFactor), 1, multiFactor)
-        multiFactor <- ifelse(test = multiFactor > 2, 2, multiFactor)
+        multiFactor <- ifelse(test = multiFactor > 3, 3, multiFactor)
         multiFactor <- add_columns(x = multiFactor, addnm = "fallow",
                                    dim = "crop", fill = 1)
 

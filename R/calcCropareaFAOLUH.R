@@ -86,7 +86,7 @@ calcCropareaFAOLUH <- function(sectoral = "kcr", physical = TRUE, cellular = FAL
 
     } else if (sectoral == "lpj") {
 
-      magCroparea <- calcOutput("Croparea", sectoral = "kcr", physical = physical,
+      magCroparea <- calcOutput("CropareaFAOLUH", sectoral = "kcr", physical = physical,
                                 cellular = FALSE, irrigation = FALSE, aggregate = FALSE)
 
       mag2lpj     <- toolGetMapping(type = "sectoral", name = "MAgPIE_LPJmL.csv",
@@ -191,7 +191,7 @@ calcCropareaFAOLUH <- function(sectoral = "kcr", physical = TRUE, cellular = FAL
 
     } else if (sectoral == "lpj") {
 
-      magCroparea   <- calcOutput("Croparea", sectoral = "kcr", physical = physical,
+      magCroparea   <- calcOutput("CropareaFAOLUH", sectoral = "kcr", physical = physical,
                                   cellular = TRUE, irrigation = irrigation, aggregate = FALSE)
       mag2lpj       <- toolGetMapping(type = "sectoral", name = "MAgPIE_LPJmL.csv",
                                       where = "mappingfolder")
@@ -205,7 +205,7 @@ calcCropareaFAOLUH <- function(sectoral = "kcr", physical = TRUE, cellular = FAL
 
     if (!physical) {
 
-      multiCropping   <- calcOutput("Multicropping", aggregate = FALSE)
+      multiCropping   <- calcOutput("MulticroppingOld", aggregate = FALSE)
       commonCountries <- intersect(getItems(multiCropping, dim = "ISO"), getItems(data, dim = "iso"))
       data            <- data * multiCropping[commonCountries, getYears(data), ]
     }
