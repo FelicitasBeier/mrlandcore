@@ -20,7 +20,6 @@
 
 calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore",
                            rice = "non_flooded", missing = "ignore") {
-
   # proxy filling map in the case of `missing = "fill"`
   proxyMapping <- c(
     # Polar or Sub-polar with Iceland/Norway
@@ -49,8 +48,15 @@ calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore",
       warning("No missing data for total numbers assumed.")
     }
 
-    FAOdata     <- calcOutput("Croparea", sectoral = "ProductionItem", # nolint : object_name_linter.
-                              physical = FALSE, aggregate = FALSE)
+    cropPrim <- readSource("FAO_online", "CropLive2010")[, , "area_harvested"]
+    # use linear_interpolate
+    fodder   <- readSource("FAO", "Fodder")[, , "area_harvested"]
+    fodder   <- toolExtrapolateFodder(fodder, endyear = max(getYears(cropPrim, as.integer = TRUE)))
+    data     <- toolFAOcombine(cropPrim, fodder) / 10^6 # convert to Mha
+    data[is.na(data)] <- 0
+    data <- collapseNames(data)
+    # not more precision than 1 ha needed. very small areas can make problems in some weighting scripts
+    FAOdata <- round(data, 6)
 
     if (rice == "non_flooded") {
       # Rice areas are pre-determined by areas reported as flooded in LUH.
