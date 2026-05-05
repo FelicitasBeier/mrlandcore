@@ -2,7 +2,7 @@
 
 R package **mrlandcore**, version **1.7.0**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/mrlandcore)](https://cran.r-project.org/package=mrlandcore) [![R build status](https://github.com/pik-piam/mrlandcore/workflows/check/badge.svg)](https://github.com/pik-piam/mrlandcore/actions) [![codecov](https://codecov.io/gh/pik-piam/mrlandcore/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mrlandcore) [![r-universe](https://pik-piam.r-universe.dev/badges/mrlandcore)](https://pik-piam.r-universe.dev/builds)
+   [![R build status](https://github.com/pik-piam/mrlandcore/workflows/check/badge.svg)](https://github.com/pik-piam/mrlandcore/actions) [![codecov](https://codecov.io/gh/pik-piam/mrlandcore/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mrlandcore) [![r-universe](https://pik-piam.r-universe.dev/badges/mrlandcore)](https://pik-piam.r-universe.dev/builds)
 
 ## Purpose and Functionality
 
@@ -48,7 +48,7 @@ A BibTeX entry for LaTeX users is
   title = {mrlandcore: Fundamental MAgPIE preprocessing functions including
     calcLanduseInitialisation},
   author = {Felicitas Beier and Kristine Karstens and Marcos Alves and Jan {Philipp Dietrich} and Benjamin {Leon Bodirsky} and David Hoetten and Florian Humpenoeder and Jens Heinke and Patrick {v. Jeetze} and Abhijeet Mishra and Felcitas Beier and Stephen Wirth and David Chen and Ulrich Kreidenweis and Pascal Sauer},
-  date = {2026-03-31},
+  date = {2026-05-05},
   year = {2026},
   url = {https://github.com/pik-piam/mrlandcore},
   note = {Version: 1.7.0},
