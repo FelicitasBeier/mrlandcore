@@ -5,12 +5,18 @@
 \title{calcNPPyearly}
 \usage{
 calcNPPyearly(
+  subtype = "preind",
   lpjml = "lpjml5.10.0-m1",
   climatetype = "MRI-ESM2-0:ssp370",
   unit = "tC/m2"
 )
 }
 \arguments{
+\item{subtype}{Type of NPP to be returned.
+Options:
+"preind": reference pre-industrial NPP from pi-control run
+"pnv": potetnial NPP from potential natural vegetation run}
+
 \item{lpjml}{Defines LPJmL version for main crop inputs}
 
 \item{climatetype}{Switch between different climate scenarios}
@@ -20,11 +26,6 @@ Options:
 "tC/m2" (tons carbon per square meter, original LPJmL unit)
 "tC/ha" (tons carbon per hectare)
 "tDM/ha" (tons dry matter per hectare, standard MAgPIE unit)}
-
-\item{type}{Type of NPP to be returned.
-Options:
-"preind": reference pre-industrial NPP from pi-control run
-"pnv": potetnial NPP from potential natural vegetation run}
 }
 \value{
 magpie object in cellular resolution
