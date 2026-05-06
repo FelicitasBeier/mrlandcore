@@ -1,5 +1,5 @@
 #' @title calcLUH2MAgPIE
-#' @description Calculates the real aggregation of LUH croptypes to MAgPIE croptypes
+#' @description Calculates the relation matrix for LUH croptype and MAgPIE croptype areas
 #'              out of LUH2FAO and FAO2MAgPIE mappings
 #'
 #' @param share       total (for total numbers), LUHofMAG (for share of LUH within kcr types),
@@ -48,6 +48,7 @@ calcLUH2MAgPIE <- function(share = "total", bioenergy = "ignore",
       warning("No missing data for total numbers assumed.")
     }
 
+    # BLB: Shouldnt this rather use FAOharmonized?
     cropPrim <- readSource("FAO_online", "CropLive2010")[, , "area_harvested"]
     # use linear_interpolate
     fodder   <- readSource("FAO", "Fodder")[, , "area_harvested"]
