@@ -32,7 +32,7 @@ calcNPPyearly <- function(subtype = "preind",
                           unit = "tC/m2") {
 
   if (subtype == "preind") {
-    # Pre-industrial NPP (from picontrol run, tranformed to tDM/ha)
+    # Pre-industrial NPP (from picontrol run, transformed to tDM/ha)
     npp <- calcOutput("LPJmLTransform", lpjmlversion = lpjml,
                       climatetype = "GSWP3-W5E5:picontrol",
                       subtype     = "pnv:npp", subdata = NULL,
@@ -43,9 +43,7 @@ calcNPPyearly <- function(subtype = "preind",
 
     # Average over entire pre-industrial period
     npp <- dimSums(npp, dim = "year") / length(getItems(npp, dim = "year"))
-    ### To Do: Discuss with Isabelle / Jens / Fabian: whether it should be
-    ###        over the entire period or whether we should select an e.g. 30-year
-    ###        period thereof
+
   } else if (subtype == "pnv") {
     # Smoothed and harmonized time series of NPP for potential natural vegetation
     npp <- calcOutput("LPJmLHarmonize", lpjmlversion =  lpjml,
