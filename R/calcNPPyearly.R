@@ -62,7 +62,7 @@ calcNPPyearly <- function(subtype = "preind",
   ###########################
   if (unit == "tC/m2") {
     # transform from tDM/ha to tC/m2
-    npp <- npp * 0.45 / 0.01
+    npp <- npp * 0.45 / 1e-4
   } else if (unit == "tC/ha") {
     # transform from tDM/ha to tC/ha
     npp <- npp * 0.45
