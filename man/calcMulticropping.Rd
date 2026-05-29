@@ -4,14 +4,17 @@
 \alias{calcMulticropping}
 \title{calcMulticropping}
 \usage{
-calcMulticropping()
+calcMulticropping(irrigation = TRUE)
+}
+\arguments{
+\item{irrigation}{report irrigated and non-irrigated areas separately}
 }
 \value{
 List of magpie objects with results on country level, weight on country level, unit and description.
 }
 \description{
 Multicropping factor, telling how many harvests are produced
-on one unit of phyiscal area. Fallow lands are not counted in, so the factor
+on one unit of physical area. Fallow lands are not counted in, so the factor
 is always larger than 1.
 }
 \examples{
@@ -24,5 +27,5 @@ calcOutput("Multicropping")
 [calcCroparea()]
 }
 \author{
-Benjamin Leon Bodirsky
+Benjamin Leon Bodirsky, Felicitas Beier
 }
