@@ -30,6 +30,10 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
     # description of data to be returned
     description <- paste0(ifelse(physical, "physical ", "harvested "),
                           "croparea from LandInG data set")
+
+    # The following calculations are based on cellular, irrigation and fallow
+    # dimensions being included. The selection of what is returned happens
+    # further down by a recursive function call
     if (irrigation && cellular && fallow) {
       # read in croparea
       croparea <- calcOutput("CropareaLandInG", sectoral = sectoral, physical = TRUE,
@@ -98,7 +102,7 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
 
       landuseIniCrop    <- collapseNames(landuseIni[, , "crop"])
 
-      # resclae
+      # rescale
       cropareaCalibrated <- cropareaShareGrid * landuseIniCrop
 
       ### Check physical cropland matching ###
@@ -116,7 +120,7 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
       description <- paste0(description, " including fallow land.")
 
     } else {
-      # To speed up, aggregation is done with incursively.
+      # To speed up, aggregation is done with recursively
       croparea <- calcOutput("Croparea", aggregate = FALSE, sectoral = sectoral,
                              physical = physical, fallow = TRUE,
                              cellular = TRUE, irrigation = TRUE,
@@ -130,8 +134,8 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
                                            conditions = "is.na()", replaceby = 0)
       }
       if (!irrigation) {
-        # aggregate to countries
-        croparea <- dimSums(croparea, dim = c("irrigation"))
+        # aggregate irrigation dimension
+        croparea <- dimSums(croparea, dim = "irrigation")
       }
     }
 

@@ -15,12 +15,10 @@
 #'
 calcMulticropping <- function(irrigation = TRUE) {   # nolint
 
-  phys   <- collapseNames(dimSums(calcOutput("Croparea", physical = TRUE, cellular = TRUE,
-                                             aggregate = FALSE, irrigation = irrigation),
-                                  dim = 3.1))
-  harv   <- collapseNames(dimSums(calcOutput("Croparea", physical = FALSE, cellular = TRUE,
-                                             aggregate = FALSE, irrigation = irrigation),
-                                  dim = 3.1))
+  phys   <- collapseNames(calcOutput("Croparea", physical = TRUE, cellular = TRUE,
+                                             aggregate = FALSE, irrigation = irrigation))
+  harv   <- collapseNames(calcOutput("Croparea", physical = FALSE, cellular = TRUE,
+                                             aggregate = FALSE, irrigation = irrigation))
   out <- ifelse(phys > 0, harv / phys, NA)
 
   out[is.na(out)] <- 1
