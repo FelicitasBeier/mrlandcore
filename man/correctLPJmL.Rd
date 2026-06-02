@@ -4,10 +4,12 @@
 \alias{correctLPJmL}
 \title{correctLPJmL}
 \usage{
-correctLPJmL(x)
+correctLPJmL(x, subtype)
 }
 \arguments{
 \item{x}{list of magpie object and unit provided by the read function}
+
+\item{subtype}{Switch between different inputs}
 }
 \description{
 corrects data that was read in from LPJmL and converts units

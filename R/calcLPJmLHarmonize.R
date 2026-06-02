@@ -33,8 +33,6 @@ calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
                                subtype = "pnv:soilc", subdata = NULL,
                                monthly     = FALSE) {
 
-  ### Question (Jan): calcLPJmLHarmonize is very slow. Can we do anything to improve the performance?
-
   # Extract settings for LPJmL from version and climatetype argument
   cfg <- toolLPJmLHarmonize(lpjmlversion = lpjmlversion, climatetype = climatetype)
 

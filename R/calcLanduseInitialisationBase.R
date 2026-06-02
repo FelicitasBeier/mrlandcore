@@ -83,9 +83,11 @@ calcLanduseInitialisationBase <- function(selectyears = "past_til2020") {
                                fill = 0, verbosity = 2)
   natTarget <- .natureTarget(luCountry, forestArea)
 
+  cfg <- toolLPJmLDefault(suppressNote = TRUE)
+
   vegC  <- calcOutput("LPJmLTransform",
-                      lpjmlversion = "lpjml5.9.5-m1",        #### To Do: Why is this hard-coded here?
-                      climatetype  = "MRI-ESM2-0:ssp370",
+                      lpjmlversion = cfg$defaultLPJmLVersion,
+                      climatetype  = cfg$baselineGcm,
                       subtype      = "pnv:vegc",
                       monthly      = FALSE,
                       aggregate    = FALSE)

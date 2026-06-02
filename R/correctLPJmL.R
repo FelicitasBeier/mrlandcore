@@ -2,6 +2,7 @@
 #' @description corrects data that was read in from LPJmL and converts units
 #'              to MAgPIE standard
 #' @param x list of magpie object and unit provided by the read function
+#' @param subtype Switch between different inputs
 #'
 #' @author Felicitas Beier, Kristine Karstens
 #' @seealso
@@ -11,28 +12,25 @@
 #' readSource("LPJmL", convert = "onlycorrect")
 #' }
 #'
-correctLPJmL <- function(x) {
-  # check and replace negative values
-  # toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative", falseStatus = "warn")
-  # x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
+correctLPJmL <- function(x, subtype) {
 
-  ### To Do (discuss with Mike, Kristine): There are outputs where negative
-  # values are possible (e.g., monthly NPP). There, we would like to keep
-  # the negatives and only correct for them after aggregating to yearly values.
-  # Should we move above toolExpectTrue and correction somewhere else
-  # (e.g., the calc function of the respective input where we know it must be >0)
-  # I moved it now to calcLPJmLTransform (after monthly aggregation)
+  # Check and replace negative values
+  # Special case: for monthly NPP negative values should be kept and
+  # only be corrected after aggregation to yearly values (see calcLPJmLTransform)
+  if (!grepl("npp", subtype)) {
+    toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative",
+                   falseStatus = "warn")
+    # Correct negative values (set to zero)
+    x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
+  }
 
-  # check and replace N/A's
-  toolExpectTrue(all(!is.na(x)), "Data provided by LPJmL doesn't contain N/A's", falseStatus = "warn")
+  # Check and replace N/A's
+  toolExpectTrue(all(!is.na(x)), "Data provided by LPJmL doesn't contain N/A's",
+                 falseStatus = "warn")
   x <- toolConditionalReplace(x, conditions = c("is.na()"), replaceby = 0)
 
   # extract unit of data
   unit <- madrat::getFromComment(x, "unit")
-
-  ### To Do (Kristine): please double-check unit conversion below
-
-  ### To Do (Kristine, Mike): Shouldn't the following better be in convertLPJmL
 
   # unit conversion
   if (grepl("gC/m2", unit)) {
@@ -58,13 +56,8 @@ correctLPJmL <- function(x) {
     # Transformation factor (numerator): 1 m^2 = 1e-4 ha
     x <- x * 1e-4
     unit <- "ha"
-    ### Question (Jan, Kristine): should we transform to ha
-    ### or does this include unnecessary rounding imprecision?
-    ### when we transform lake evap that also has to be multiplied with 1e-6
-    ### so that it ends up being to mio. m^3?
   } else if (unit == "hm3/month") {
     # Transformation factor (numerator): 1 cubic hectometer = 1 mio. cubic meter
-    ### Question (Jens, Kristine): Is this correct? What's hm3?
     unit <- "mio. m^3/month"
   }
 
