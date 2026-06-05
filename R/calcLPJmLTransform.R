@@ -124,16 +124,6 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.9.5-m1",
       } else {
         stop("Please specify how monthly values should be aggregated to yearly values ('sum' or 'mean').")
       }
-
-      ########## Check and replace negative values   ##########
-      # For monthly NPP negative values are possible.
-      # Negative values corrected (set to zero) after aggregation to yearly.
-      # For other inputs warning would be returned
-      if (!grepl("npp", subtype)) {
-        toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative",
-                       falseStatus = "warn")
-      }
-      x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
     }
   }
 
