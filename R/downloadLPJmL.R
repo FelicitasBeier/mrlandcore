@@ -10,12 +10,12 @@
 #' @author Kristine Karstens, Marcos Alves, Felicitas Beier
 #' @examples
 #' \dontrun{
-#' readSource("LPJmL", subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soilc", convert = FALSE)
+#' readSource("LPJmL", subtype = "lpjml5.10.0-m4:GSWP3-W5E5:historical:pnv:soilc", convert = FALSE)
 #' }
 #' @importFrom utils download.file untar
 #' @importFrom madrat toolSplitSubtype
 
-downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soilc") { # nolint
+downloadLPJmL <- function(subtype = "lpjml5.10.0-m4:GSWP3-W5E5:historical:pnv:soilc") { # nolint
 
   x     <- toolSplitSubtype(subtype,
                             list(version      = NULL,
@@ -24,7 +24,7 @@ downloadLPJmL <- function(subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soi
                                  runtype      = NULL,
                                  variable     = NULL))
 
-
+  # To Do: Upload LPJmL data to Zenodo and include the following code here
   # build a zenodo download
   # check zenodor or ZenodoManager for easy downloading,
   # or simply use

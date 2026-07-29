@@ -15,9 +15,9 @@
 #' readSource("LPJmL", convert = FALSE)
 #' }
 
-readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
+readLPJmL <- function(subtype = "lpjml5.10.0-m4:MRI-ESM2-0:ssp245:crops:sdate") {
 
-  # filenames for dataset and grid
+  # extract file names for LPJmL dataset and LPJmL grid file
   files <- list.files(path = ".", pattern = "\\.bin\\.json$", full.names = FALSE)
   gridname <- lpjmlkit::find_varfile(".", variable = "grid")
   dataname <- grep("grid", files, invert = TRUE, value = TRUE)
@@ -87,7 +87,6 @@ readLPJmL <- function(subtype = "lpjml5.9.5-m1:MRI-ESM2-0:ssp370:crops:sdate") {
     } else {
       magclass::getSets(x)["d3.1"] <- "crop"
     }
-
   }
 
   # transform to format of magpie object while maintaining cell order

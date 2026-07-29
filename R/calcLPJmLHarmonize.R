@@ -28,8 +28,8 @@
 #' calcOutput("LPJmLHarmonize", subtype = "pnv:soilc", aggregate = FALSE)
 #' }
 
-calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.9.5-m1",
-                               climatetype = "MRI-ESM2-0:ssp370",
+calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.10.0-m4",
+                               climatetype = "MRI-ESM2-0:ssp245",
                                subtype = "pnv:soilc", subdata = NULL,
                                monthly     = FALSE) {
 

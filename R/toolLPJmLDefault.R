@@ -20,12 +20,12 @@ toolLPJmLDefault <- function(suppressNote = FALSE) {
   ### Harmonization settings
   cfg$baselineHist         <- "GSWP3-W5E5:historical"
   cfg$refYearHist          <- "y2010"
-  cfg$baselineGcm          <- "MRI-ESM2-0:ssp370"
+  cfg$baselineGcm          <- "MRI-ESM2-0:ssp245"
   cfg$refYearGcm           <- "y2025"
 
   ### Default version settings
   #   Use only for purely historical purposes
-  cfg$defaultLPJmLVersion  <- "lpjml5.10.0-m2"
+  cfg$defaultLPJmLVersion  <- "lpjml5.10.0-m4"
   #   Use for climate inputs future and past
   cfg$climateInputScen     <- "ISIMIP3bv2"
   cfg$climateInputHist     <- "ISIMIP3av2"

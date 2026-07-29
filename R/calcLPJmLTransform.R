@@ -33,8 +33,8 @@
 #' calcOutput("LPJmLTransform", subtype = "pnv:soilc", aggregate = FALSE)
 #' }
 #'
-calcLPJmLTransform <- function(lpjmlversion = "lpjml5.9.5-m1",
-                               climatetype  = "MRI-ESM2-0:ssp370",
+calcLPJmLTransform <- function(lpjmlversion = "lpjml5.10.0-m4",
+                               climatetype  = "MRI-ESM2-0:ssp245",
                                subtype      = "pnv:soilc",
                                subdata      = NULL,
                                stage        = "smoothed:cut",

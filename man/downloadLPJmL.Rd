@@ -4,7 +4,7 @@
 \alias{downloadLPJmL}
 \title{downloadLPJmL}
 \usage{
-downloadLPJmL(subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soilc")
+downloadLPJmL(subtype = "lpjml5.10.0-m4:GSWP3-W5E5:historical:pnv:soilc")
 }
 \arguments{
 \item{subtype}{Switch between different input
@@ -21,7 +21,7 @@ Download LPJmL content by version, climate model and scenario
 }
 \examples{
 \dontrun{
-readSource("LPJmL", subtype = "lpjml5.9.5-m1:GSWP3-W5E5:historical:pnv:soilc", convert = FALSE)
+readSource("LPJmL", subtype = "lpjml5.10.0-m4:GSWP3-W5E5:historical:pnv:soilc", convert = FALSE)
 }
 }
 \author{
