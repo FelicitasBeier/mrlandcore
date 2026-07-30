@@ -6,8 +6,8 @@
 \usage{
 calcNPPyearly(
   subtype = "preind",
-  lpjml = "lpjml5.10.0-m1",
-  climatetype = "MRI-ESM2-0:ssp370",
+  lpjml = "lpjml5.10.0-m4",
+  climatetype = "MRI-ESM2-0:ssp245",
   unit = "tC/m2"
 )
 }
