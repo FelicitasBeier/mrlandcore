@@ -5,8 +5,8 @@
 \title{calcYieldsLPJmL}
 \usage{
 calcYieldsLPJmL(
-  lpjml = "lpjml5.9.16-m1",
-  climatetype = "MRI-ESM2-0:ssp370",
+  lpjml = "lpjml5.10.0-m4",
+  climatetype = "MRI-ESM2-0:ssp245",
   selectyears = seq(1965, 2100, by = 5),
   multicropping = FALSE
 )
