@@ -2,10 +2,8 @@
 #' @description Download LPJmL content by version, climate model and scenario
 #'
 #' @param subtype Switch between different input
-#' It consists of LPJmL version, climate model, scenario and variable.
-#' For pasture lpjml runs, the scenario variable is used to navigate the output folder structure
-#' (e.g. 'LPJmL4_for_MAgPIE_3dda0615:GSWP3-W5E5:historical:soilc' or
-#' "LPJmL5.2_Pasture:IPSL_CM6A_LR:ssp126_co2_limN_00:soilc_past_hist")
+#'                It consists of LPJmL version, climate model,
+#'                scenario and variable.
 #' @return metadata entry
 #' @author Kristine Karstens, Marcos Alves, Felicitas Beier
 #' @examples
