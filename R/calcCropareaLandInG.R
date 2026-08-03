@@ -13,7 +13,6 @@
 #' @param irrigation  If true: cellular areas are returned separated
 #'                    into irrigated and rainfed
 #' @param selectyears extract certain years from the data
-#' @param lpjml       LPJmL version used to determine multiple cropping suitability
 #' @param climatetype Climate scenario or historical baseline "GSWP3-W5E5:historical"
 #'                    used to determine multiple cropping suitability
 #'
@@ -27,16 +26,13 @@
 
 calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE,
                                 irrigation = FALSE, selectyears = "all",
-                                lpjml = "lpjml5.9.16-m1",
                                 climatetype = "MRI-ESM2-0:ssp370") {
-  ### To Do: update default argument of lpjml and climatetype once we have new LPJmL version ready
 
-  if (length(lpjml) != 1) {
-    tmp <- lpjml[["crop"]]
-  } else {
-    tmp <- lpjml
-  }
-  toolExpectTrue(tmp == "ggcmi_phase3_nchecks_bft_e511ac58",
+  # extract current default lpjml version
+  cfg   <- toolLPJmLDefault(suppressNote = TRUE)
+  lpjml <- cfg$defaultLPJmLVersion
+
+  toolExpectTrue(lpjml == "ggcmi_phase3_nchecks_bft_e511ac58",
                  paste0("In calcCropareaLandInG: ",
                         "LPJmL version is in line with the version used ",
                         "in last LandInG run."),

@@ -10,7 +10,6 @@ calcCropareaLandInG(
   cellular = FALSE,
   irrigation = FALSE,
   selectyears = "all",
-  lpjml = "lpjml5.9.16-m1",
   climatetype = "MRI-ESM2-0:ssp370"
 )
 }
@@ -27,8 +26,6 @@ Option FALSE is not (yet) available.}
 into irrigated and rainfed}
 
 \item{selectyears}{extract certain years from the data}
-
-\item{lpjml}{LPJmL version used to determine multiple cropping suitability}
 
 \item{climatetype}{Climate scenario or historical baseline "GSWP3-W5E5:historical"
 used to determine multiple cropping suitability}
