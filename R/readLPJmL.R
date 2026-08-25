@@ -101,6 +101,12 @@ readLPJmL <- function(subtype = "lpjml5.10.0-m4:MRI-ESM2-0:ssp245:crops:sdate") 
 
   x <- mstools::toolCoord2Isocoord(x)
 
+  # No convertLPJmL() exists, so readSource("LPJmL", ...) always resolves to
+  # the "correct" prefix (both convert = TRUE, the default, and convert =
+  # "onlycorrect", which is what all current callers use) -- the read-level
+  # cache written here is never read back. Skipping it avoids gzip-writing a
+  # large object (up to several GB) to disk for nothing.
   return(list(x = x,
-              unit = unit))
+              unit = unit,
+              cache = FALSE))
 }

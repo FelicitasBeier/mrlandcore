@@ -18,16 +18,28 @@ correctLPJmL <- function(x, subtype) {
   # Special case: for monthly NPP negative values should be kept and
   # only be corrected after aggregation to yearly values (see calcLPJmLTransform)
   if (!grepl("npp", subtype)) {
-    toolExpectTrue(all(x >= -1e-10), "Data provided by LPJmL is not negative",
+    # min(x) >= -1e-10 is equivalent to all(x >= -1e-10) but short-circuits
+    # a full elementwise comparison into a single reduction, which matters
+    # on multi-GB LPJmL objects. NA is handled the same way as before: since
+    # NA is never isTRUE(), a not-yet-checked-for-NA object still correctly
+    # falls through to running the replace below.
+    noNeg <- min(x) >= -1e-10
+    toolExpectTrue(noNeg, "Data provided by LPJmL is not negative",
                    falseStatus = "warn")
-    # Correct negative values (set to zero)
-    x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
+    # Correct negative values (set to zero) -- skip the full-object pass
+    # entirely when the check above already confirmed nothing to replace
+    if (!isTRUE(noNeg)) {
+      x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
+    }
   }
 
-  # Check and replace N/A's
-  toolExpectTrue(all(!is.na(x)), "Data provided by LPJmL doesn't contain N/A's",
+  # Check and replace N/A's (same short-circuit reasoning as above)
+  noNA <- !anyNA(x)
+  toolExpectTrue(noNA, "Data provided by LPJmL doesn't contain N/A's",
                  falseStatus = "warn")
-  x <- toolConditionalReplace(x, conditions = c("is.na()"), replaceby = 0)
+  if (!isTRUE(noNA)) {
+    x <- toolConditionalReplace(x, conditions = c("is.na()"), replaceby = 0)
+  }
 
   # extract unit of data
   unit <- madrat::getFromComment(x, "unit")
