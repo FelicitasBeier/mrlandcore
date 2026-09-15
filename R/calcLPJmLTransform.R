@@ -45,8 +45,10 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.10.0-m4",
   cfg        <- toolLPJmLScenario(lpjmlversion = lpjmlversion,
                                   climatetype  = climatetype,
                                   subtype      = subtype)
-  readinName <- paste(cfg$version, cfg$climatetype, cfg$subtype, sep = ":")
-  readinHist <- gsub("ssp[0-9]{3}", "historical", readinName)
+  readinName <- paste(cfg$version, cfg$climatetype,
+                      cfg$subtype, sep = ":")
+  readinHist <- paste(cfg$version, sub(":[^:]+$", ":historical", cfg$climatetype),
+                      cfg$subtype, sep = ":")
 
   # read in LPJmL data from selected run (historical or scenario)
   x    <- readSource("LPJmL", subtype = readinName, convert = "onlycorrect")
