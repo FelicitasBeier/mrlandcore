@@ -32,6 +32,7 @@
 #' \dontrun{
 #' calcOutput("LPJmLTransform", subtype = "pnv:soilc", aggregate = FALSE)
 #' }
+#' @export
 #'
 calcLPJmLTransform <- function(lpjmlversion = "lpjml5.10.0-m4",
                                climatetype  = "MRI-ESM2-0:ssp245",

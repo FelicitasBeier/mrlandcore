@@ -27,6 +27,8 @@
 #' \dontrun{
 #' calcOutput("LPJmLHarmonize", subtype = "pnv:soilc", aggregate = FALSE)
 #' }
+#' @export
+#'
 
 calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.10.0-m4",
                                climatetype = "MRI-ESM2-0:ssp245",
@@ -91,10 +93,20 @@ calcLPJmLHarmonize <- function(lpjmlversion = "lpjml5.10.0-m4",
     }
   }
 
+  # Define minimum threshold for returned data
+  if (grepl("npp", subtype)) {
+    # For NPP negative values are plausible, so no minimum value is set
+    minThreshold <- NULL
+  } else {
+    # For all other data, the minimum threshold is set to 0 to
+    # detect potential data inconsistencies
+    minThreshold <- 0
+  }
+
   return(list(x            = out,
               weight       = NULL,
               unit         = unit,
-              min          = 0,
+              min          = minThreshold,
               description  = paste0("Output from LPJmL (", subtype, ") for ",
                                     lpjmlversion, " and ", climatetype, "."),
               isocountries = FALSE))

@@ -3,7 +3,7 @@ Package: mrlandcore
 Title: Fundamental MAgPIE preprocessing functions including
     calcLanduseInitialisation
 Version: 1.8.4
-Date: 2026-08-24
+Date: 2026-09-15
 Authors@R: c(
     person("Felicitas", "Beier", , "beier@pik-potsdam.de", role = c("aut", "cre")),
     person("Kristine", "Karstens", role = "aut"),
@@ -49,4 +49,4 @@ Suggests:
     testthat
 Encoding: UTF-8
 Config/Needs/website: tidyverse/tidytemplate
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

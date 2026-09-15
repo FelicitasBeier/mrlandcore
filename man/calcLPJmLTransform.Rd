@@ -50,7 +50,6 @@ Transform LPJmL data in units and variables used by magpie
 \dontrun{
 calcOutput("LPJmLTransform", subtype = "pnv:soilc", aggregate = FALSE)
 }
-
 }
 \seealso{
 [readLPJmL()]
