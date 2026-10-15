@@ -233,9 +233,10 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
 
     # Correct remaining mismatches
     if (any(violation)) {
-      vcat(1, paste0(round(sum(harvestedAreaYearly[violation] - physicalAreaYearly[violation]) /
-                             sum(physicalAreaYearly) * 100, digits = 3),
-                     "% of harvested area is lost due to multiple cropping correction"))
+      lostArea <- sum(harvestedAreaYearly[violation] - physicalAreaYearly[violation])
+      vcat(1, paste0(round(lostArea / sum(physicalAreaYearly) * 100, digits = 3), "% (",
+                     format(round(lostArea * 1e6), scientific = FALSE),
+                     " ha) of harvested area is lost due to multiple cropping correction"))
       harvestedAreaYearly[violation] <- physicalAreaYearly[violation]
       vcat(1, paste0("This correction should only be necessary when LandInG is out-of-date"))
     }
