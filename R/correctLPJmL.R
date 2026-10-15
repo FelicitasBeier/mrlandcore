@@ -15,8 +15,6 @@
 correctLPJmL <- function(x, subtype) {
 
   # Check and replace negative values
-  # Special case: for monthly NPP negative values should be kept and
-  # only be corrected after aggregation to yearly values (see calcLPJmLTransform)
   if (!grepl("npp", subtype)) {
     # min(x) >= -1e-10 is equivalent to all(x >= -1e-10) but short-circuits
     # a full elementwise comparison into a single reduction, which matters
