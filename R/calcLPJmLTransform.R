@@ -56,10 +56,17 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.10.0-m4",
 
   if (!is.null(getItems(x, dim = 2))) {
     if (!grepl("historical", cfg$climatetype)) {
-      cutYr <- 1951
-      x <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
-                 x)
+      if (grepl("picontrol")) {
+        # read in entire time series of preindustrial control run
+        cutYr <- NULL
+      } else {
+        # cut time series and combine historical with scenario time series
+        cutYr <- 1951
+        x <- mbind(readSource("LPJmL", subtype = readinHist, convert = "onlycorrect"),
+                   x)
+      }
     } else {
+      # cut time series at given year
       cutYr <- 1930
     }
   }
