@@ -177,19 +177,8 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
     description <- paste0(ifelse(physical, "physical ", "harvested "),
                           "croparea from LUH and FAOSTAT")
 
-    # return croparea (and optionally fallow land)
-    if (fallow) {
-      # LUH3/FAO doesn't provide distinction of fallow land
-      fallowLand  <- new.magpie(cells_and_regions = getItems(croparea, dim = 1),
-                                years = getItems(croparea, dim = 2),
-                                names = "fallow",
-                                sets = getSets(croparea)[["d3.1"]],
-                                fill = 0)
-      croparea    <- mbind(croparea, fallowLand)
-      description <- paste0(description, " including fallow land.")
-    } else {
-      description <- paste0(description, " excluding fallow land.")
-    }
+    # return croparea
+    description <- paste0(description, " excluding fallow land.")
 
   } else {
     stop("Selected data source in calcCroparea unknown.")
