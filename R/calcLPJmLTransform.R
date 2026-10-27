@@ -56,7 +56,7 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.10.0-m4",
 
   if (!is.null(getItems(x, dim = 2))) {
     if (!grepl("historical", cfg$climatetype)) {
-      if (grepl("picontrol")) {
+      if (grepl("picontrol", cfg$climatetype)) {
         # read in entire time series of preindustrial control run
         cutYr <- NULL
       } else {
