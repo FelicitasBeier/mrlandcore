@@ -184,6 +184,9 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
     stop("Selected data source in calcCroparea unknown.")
   }
 
+  # not more precision than 1 ha needed. very small areas can make problems in some weighting scripts
+  croparea <- round(croparea, 6)
+
   return(list(x            = croparea,
               weight       = NULL,
               unit         = "million ha",
