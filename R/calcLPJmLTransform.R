@@ -139,6 +139,12 @@ calcLPJmLTransform <- function(lpjmlversion = "lpjml5.10.0-m4",
 
   ########## STAGE HANDELING START  ###############
   if (grepl("smoothed", stage)) {
+    # betr has an eight-year harvest rotation. Smoothing these harvest pules
+    # directly leads to distorted values, in particular at the beginnging and
+    # end. Thus, we first annualise these eight-year values before smoothing.
+    if ("betr" %in% unlist(getItems(x, 3, split = TRUE))) {
+      x[, , "betr"] <- toolAnnualiseRotation(x[, , "betr"], rotation = 8)
+    }
     x <- toolSmooth(x)
   } else if (grepl("raw", stage)) {
     # nothing needs to be done
