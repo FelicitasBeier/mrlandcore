@@ -22,6 +22,7 @@ importFrom(lpjclass,
   read.LPJ_input,
   readLPJ
 )
+importFrom(dplyr,"%>%")
 importFrom(lpjmlkit,read_io)
 importFrom(luscale,groupAggregate)
 importFrom(madrat,
@@ -41,7 +42,6 @@ importFrom(magclass,
   clean_magpie,
   collapseDim,
   collapseNames,
-  dimOrder,
   dimSums,
   getCells,
   getItems,
@@ -53,8 +53,7 @@ importFrom(magclass,
   new.magpie,
   setItems,
   setNames,
-  setYears,
-  where
+  setYears
 )
 importFrom(magpiesets,
   addLocation,
@@ -66,11 +65,45 @@ importFrom(mrfaocore,
 )
 importFrom(mstools,
   toolConv2CountryByCelltype,
-  toolExpectTrue,
   toolHoldConstant
 )
 importFrom(ncdf4,nc_open)
 importFrom(nleqslv,nleqslv)
+importFrom(raster,
+  brick,
+  projectRaster,
+  raster
+)
+importFrom(stringr,
+  str_count,
+  str_detect,
+  str_match,
+  str_split,
+  str_subset,
+  str_trim
+)
+importFrom(terra,
+  "ext<-",
+  aggregate,
+  ext,
+  project,
+  rast,
+  subset,
+  terraOptions
+)
+importFrom(utils,
+  download.file,
+  head,
+  person,
+  read.csv,
+  read.delim,
+  tail
+)
+importFrom(withr,
+  defer,
+  local_options,
+  local_tempdir
+)
 importFrom(raster,
   brick,
   projectRaster,

@@ -48,7 +48,7 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
 
   ### Calculations ###
   # read in fallow land (for check below)
-  fallow <- calcOutput("FallowLand", aggregate = FALSE)
+  fallow <- calcOutput("FallowLandInG", aggregate = FALSE, cellular = TRUE)
 
   # year selection
   if (any(selectyears == "all")) {
@@ -302,5 +302,5 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
               weight = NULL,
               description = "Croparea for different croptypes",
               unit = "Mha",
-              isocountries = FALSE))
+              isocountries = !cellular))
 }

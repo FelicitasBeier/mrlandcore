@@ -1,116 +1,136 @@
 #' @title calcCroparea
-#' @description Returns harvested areas of individual crops from FAOSTAT.
-#'              Total harvested areas can be lower or higher than arable
-#'              land because of multicropping or fallow land.
-#'              Rice areas are distributed to flooded LUH areas. Additional FAOSTAT
-#'              rice areas are distributed based on country shares.
+#' @description returns croparea
 #'
-#' @param sectoral   "area_harvested" returns croparea aggregated to FAO products,
-#'                   "ProductionItem" unaggregated ProdSTAT items,
-#'                   "FoodBalanceItem" Food Balance Sheet categories,
-#'                   "kcr" MAgPIE items, and "lpj" LPJmL items
-#' @param physical   if TRUE the sum over all crops agrees with the cropland area per country
-#' @param cellular   if TRUE: calculates cellular MAgPIE crop area for all magpie croptypes.
-#'                   Crop area from LUH3 crop types (c3ann, c4ann, c3per, c4per, cnfx)
-#'                   are mapped to MAgpIE crop types using "FAO2LUH2MAG_croptypes" and doing
-#'                   an intermediate step via harvested areas of FAO weight area within a
-#'                   specific LUH crop type to divide into MAgPIE crop types.
-#' @param irrigation If true: cellular areas are returned separated
-#'                   into irrigated and rainfed (see setup in calcLUH3)
+#' @param sectoral    "kcr" MAgPIE items, and "lpj" LPJmL items
+#' @param physical    if TRUE it returns the physical area, with cropareas of multicropping systems being
+#'                    scaled to match physical areas, if FALSE the area harvested is returned
+#' @param fallow      if TRUE fallow land is returned as element in crop set
+#' @param cellular    if TRUE: calculates cellular MAgPIE crop area for all magpie croptypes.
+#'                    Crop area from LUH3 crop types (c3ann, c4ann, c3per, c4per, cnfx)
+#'                    are mapped to MAgpIE crop types using "FAO2LUH2MAG_croptypes" and doing
+#'                    an intermediate step via harvested areas of FAO weight area within a
+#'                    specific LUH crop type to divide into MAgPIE crop types.
+#' @param irrigation  If true: cellular areas are returned separated
+#'                    into irrigated and rainfed (see setup in calcLUH3)
+#' @param datasource  Croparea data source (LandInG or FAOLUH).
+#'                    Datasource FAOLUH is deprecated and is only kept for
+#'                    backwards compatibility.
 #'
 #' @return areas of individual crops from FAOSTAT and weight
 #'
-#' @author Ulrich Kreidenweis, Kristine Karstens, Felicitas Beier
+#' @author Felicitas Beier, Benjamin Leon Bodirsky
 #'
-#' @importFrom utils read.csv
-#' @importFrom magclass setNames getCells collapseDim getItems
-#' @importFrom magpiesets findset addLocation
-#' @importFrom madrat toolAggregate toolGetMapping
-#' @importFrom mrfaocore toolExtrapolateFodder toolFAOcombine
-#' @importFrom utils person
-#' @importFrom withr local_options
+#' @importFrom magpiesets findset
 
-calcCroparea <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE, irrigation = FALSE) {
+calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
+                         cellular = FALSE,
+                         irrigation = FALSE, datasource = "LandInG") {
 
-  local_options(magclass_sizeLimit = 1e+10)
+  if (datasource == "LandInG") {
+    # description of data to be returned
+    description <- paste0(ifelse(physical, "physical ", "harvested "),
+                          "croparea from LandInG data set")
 
-  if (!cellular) {
-
-    if (irrigation) stop("Irrigation levels for country based data not yet implemented!")
-
-    #################################
-    ### Croparea on country level ###
-    #################################
-
-    if (!is.null(sectoral) && !(sectoral == "lpj")) {
-
-      cropPrim <- readSource("FAO_online", "CropLive2010")[, , "area_harvested"]
-      # use linear_interpolate
-      fodder   <- readSource("FAO", "Fodder")[, , "area_harvested"]
-      fodder   <- toolExtrapolateFodder(fodder, endyear = max(getYears(cropPrim, as.integer = TRUE)))
-      data     <- toolFAOcombine(cropPrim, fodder) / 10^6 # convert to Mha
-
-      if (sectoral %in% c("FoodBalanceItem", "kcr")) {
-
-        aggregation <- toolGetMapping("FAOitems_online_2010update.csv", type = "sectoral",
-                                      where = "mrfaocore")
-        remove      <- setdiff(getNames(data, dim = 1), aggregation$post2010_ProductionItem)
-        data        <- data[, , remove, invert = TRUE]
-        data        <- toolAggregate(data, rel = aggregation, from = "post2010_ProductionItem",
-                                     to = ifelse(sectoral == "kcr", "k", sectoral),
-                                     dim = 3.1, partrel = TRUE)
-
-        if (sectoral == "kcr") {
-          # add bioenergy with 0 values
-          data <- add_columns(x = data, addnm = c("betr", "begr"), dim = 3.1)
-          data[, , c("betr", "begr")] <- 0
-
-          # remove all non kcr items
-          kcr    <- findset("kcr")
-          remove <- setdiff(getItems(data, dim = 3.1), kcr)
-
-          if (length(remove) > 0) {
-            remainArea <- mean(dimSums(data[, , "area_harvested"][, , remove], dim = 1) /
-                                 dimSums(dimSums(data[, , "area_harvested"], dim = 3), dim = 1))
-            if (remainArea > 0.02) vcat(1, "Aggregation created a 'remaining' category. The area harvested is",
-                                        round(remainArea, digits = 3) * 100, "% of total \n")
-            vcat(2, paste0("Data for the following items removed: ", remove))
-            data <- data[, , kcr]
-          }
-        }
-
-      } else if (sectoral != "ProductionItem") {
-        stop("Sectoral aggregation not supported")
+    # The following calculations are based on cellular, irrigation and fallow
+    # dimensions being included. The selection of what is returned happens
+    # further down by a recursive function call
+    if (irrigation && cellular && fallow) {
+      # read in croparea
+      croparea <- calcOutput("CropareaLandInG", sectoral = sectoral, physical = TRUE,
+                             cellular = TRUE, irrigation = TRUE,
+                             aggregate = FALSE)
+      selectyears <- getYears(croparea, as.integer = TRUE)
+      # Extend data until 2020
+      if (!any(grepl("y2020", getItems(croparea, dim = 2)))) {
+        selectyears <- c(selectyears, (tail(selectyears, 1) + 1):2020)
+        croparea <- toolHoldConstant(croparea, years = selectyears)
       }
 
-    } else if (sectoral == "lpj") {
+      if (!physical) {
+        # calculate crop and irrigation-specific multicropping factor
+        cropareaMulti <- calcOutput("CropareaLandInG", sectoral = sectoral, physical = FALSE,
+                                    cellular = TRUE, irrigation = TRUE,
+                                    aggregate = FALSE)
 
-      magCroparea <- calcOutput("Croparea", sectoral = "kcr", physical = physical,
-                                cellular = FALSE, irrigation = FALSE, aggregate = FALSE)
+        if (!any(grepl("y2020", getItems(cropareaMulti, dim = 2)))) {
+          cropareaMulti <- toolHoldConstant(cropareaMulti, years = selectyears)
+        }
 
-      mag2lpj    <- toolGetMapping(type = "sectoral", name = "MAgPIE_LPJmL.csv",
-                                   where = "mrlandcore")
-      mag2lpj    <- mag2lpj[!(mag2lpj$MAgPIE == "pasture"), ]
+        multiFactor <- cropareaMulti / croparea
+        multiFactor <- ifelse(test = is.nan(multiFactor), 1, multiFactor)
 
-      lpjCroparea <- toolAggregate(magCroparea, rel = mag2lpj, dim = 3.1,
-                                   from = "MAgPIE", to = "LPJmL5")
-      data        <- lpjCroparea
+        # Cap the multicropping factor at 3 harvests per year. Inconsistencies
+        # between the physical and the harvested area data set can produce
+        # unrealistically high factors in edge cases, and three harvests per year
+        # is the defensible ceiling. Report when this stops being an edge case,
+        # i.e. when the physical area affected exceeds 10 Mha globally in a year.
+        cappedArea <- dimSums(croparea * (multiFactor > 3), dim = c(1, 3), na.rm = TRUE)
+        if (max(cappedArea) > 10) {
+          vcat(1, "Multicropping factor exceeded 3 on",
+               round(max(cappedArea), digits = 1), "Mha of physical cropland in",
+               getItems(cappedArea, dim = 2)[which.max(as.vector(cappedArea))],
+               "and was truncated to 3 \n")
+        }
 
-    } else {
-      stop("Sectoral aggregation not supported")
-    }
+        multiFactor <- ifelse(test = multiFactor > 3, 3, multiFactor)
+        multiFactor <- add_columns(x = multiFactor, addnm = "fallow",
+                                   dim = "crop", fill = 1)
 
-    # use the share of the single crops to calculate their "physical" area
-    if (physical) {
-      # 6620  = (6620|Arable land and Permanent crops or  6620|Cropland)
-      cropland        <- setNames(collapseNames(calcOutput("FAOLand",
-                                                           aggregate = FALSE)[, , "6620", pmatch = TRUE]), "crop")
-      harvestedShare <- data / dimSums(data, dim = 3.1)
-      commonyears     <- intersect(getYears(cropland), getYears(harvestedShare))
-      data            <- collapseNames(cropland[, commonyears, ] * harvestedShare[, commonyears, ])
-    }
+      }
 
-    data[is.na(data)] <- 0
+      fallowLand   <- calcOutput("FallowLandInG", cellular = TRUE,
+                                 aggregate = FALSE)
+
+      if (!any(grepl("y2020", getItems(fallowLand, dim = 2)))) {
+        fallowLand <- toolHoldConstant(fallowLand, years = selectyears)
+      }
+
+      ### Integrate fallow into physical land
+      # implicit assumption: fallow is the same in physical and harvested area,
+      # as multicropping with fallow is not multicropping
+
+      fallowLand <- setNames(fallowLand[, selectyears, ], "fallow")
+
+      totalCroparea <- dimSums(croparea, dim = "crop")
+      irrigationShare     <- (totalCroparea[, , c("rainfed", "irrigated")] /
+                                dimSums(totalCroparea, dim = "irrigation"))
+      irrigationShare <- ifelse(is.nan(irrigationShare), 0, irrigationShare)
+      fallowLandIrrigated <- irrigationShare * fallowLand
+
+      cropareaWithFallow <- mbind(croparea, fallowLandIrrigated)
+
+      ### Correction to match LanduseInitialisation cropland area
+
+      # calculate area shares
+      cropareaShareGrid <- cropareaWithFallow / dimSums(cropareaWithFallow, dim = c("irrigation", "crop"))
+      cropareaShareIso <- dimSums(cropareaWithFallow, dim = c("x", "y")) /
+        dimSums(cropareaWithFallow, dim = c("x", "y", "irrigation", "crop"))
+      cropareaShareGlo <- dimSums(cropareaWithFallow, dim = 1) /
+        dimSums(cropareaWithFallow, dim = c("x", "y", "iso", "irrigation", "crop"))
+      cropareaShareIso <- ifelse(is.nan(cropareaShareIso), cropareaShareGlo, cropareaShareIso)
+      cropareaShareGrid <- ifelse(is.nan(cropareaShareGrid), cropareaShareIso, cropareaShareGrid)
+
+      # for correction: read LanduseInitialisation cropland area
+      landuseIni <- calcOutput(type = "LanduseInitialisation", aggregate = FALSE,
+                               cellular = TRUE, selectyears = selectyears)
+
+      landuseIniCrop    <- collapseNames(landuseIni[, , "crop"])
+
+      # rescale
+      cropareaCalibrated <- cropareaShareGrid * landuseIniCrop
+
+      ### Check physical cropland matching ###
+      # Sanity check (physical croparea + fallow land should match total cropland
+      # in LanduseInitialisation after calibration)
+      if (any(round(dimSums(cropareaCalibrated, dim = c("crop", "irrigation")) - landuseIniCrop, 6) != 0)) {
+        stop("Calibrated physical croparea + fallow land does not match LanduseInitialisation cropland.")
+      }
+
+      if (!physical) {
+        cropareaCalibrated <- cropareaCalibrated * multiFactor
+      }
+
+      croparea    <- cropareaCalibrated
 
   } else {
     ##################################
@@ -161,7 +181,6 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE, ir
         # flooded rice areas
         floodedRice <- collapseNames(ricearea[, , "flooded"] * irrigShr[, , "c3ann"])
 
-
         luhCroparea <- luhCroparea[, , "total", invert = TRUE]
 
       } else {
@@ -196,31 +215,45 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, cellular = FALSE, ir
                                   cellular = TRUE, irrigation = irrigation, aggregate = FALSE)
       mag2lpj       <- toolGetMapping(type = "sectoral", name = "MAgPIE_LPJmL.csv",
                                      where = "mrlandcore")
-      mag2lpj      <- mag2lpj[!(mag2lpj$MAgPIE == "pasture"), ]
+      mag2lpj       <- mag2lpj[!(mag2lpj$MAgPIE == "pasture"), ]
       lpjCroparea   <- toolAggregate(magCroparea, rel = mag2lpj, dim = "MAG",
                                      from = "MAgPIE", to = "LPJmL5")
       data          <- lpjCroparea
 
     } else {
-      stop("Not possible (for now) for the given item set (sectoral)!")
+      description <- paste0(description, " including fallow land.")
     }
 
-    if (!physical) {
+  } else if (datasource == "FAOLUH") {
 
-      multiCropping   <- calcOutput("Multicropping", aggregate = FALSE)
-      commonCountries <- intersect(getItems(multiCropping, dim = "ISO"), getItems(data, dim = "iso"))
-      data            <- data * multiCropping[commonCountries, getYears(data), ]
+    if (fallow) {
+      stop("fallow not implemented for FAOLUH")
     }
+    ### For backwards compatibility only ###
+    # This chunk can be deleted when croparea update is completed.
+
+    # read in croparea
+    croparea <- calcOutput("CropareaFAOLUH", sectoral = sectoral, physical = physical,
+                           cellular = cellular, irrigation = irrigation,
+                           aggregate = FALSE)
+
+    # description of data to be returned
+    description <- paste0(ifelse(physical, "physical ", "harvested "),
+                          "croparea from LUH and FAOSTAT")
+
+    # return croparea
+    description <- paste0(description, " excluding fallow land.")
+
+  } else {
+    stop("Selected data source in calcCroparea unknown.")
   }
 
-  data <- collapseNames(data)
-
   # not more precision than 1 ha needed. very small areas can make problems in some weighting scripts
-  data <- round(data, 6)
+  croparea <- round(croparea, 6)
 
-  return(list(x            = data,
+  return(list(x            = croparea,
               weight       = NULL,
               unit         = "million ha",
-              description  = "harvested crop areas from FAOSTAT",
+              description  = description,
               isocountries = !cellular))
 }

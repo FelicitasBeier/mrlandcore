@@ -74,7 +74,7 @@ calcLanduseInitialisationBase <- function(selectyears = "past_til2020") {
   luh <- calcOutput("LUH3", landuseTypes = "LUH3", irrigation = FALSE, cellular = TRUE,
                     yrs = selectyears, aggregate = FALSE)
   # country-level forest area
-  forestArea <- calcOutput("ForestArea", selectyears = selectyears, aggregate = FALSE)
+  forestArea <- calcOutput("ForestArea", years = selectyears, aggregate = FALSE)
   # rename categories and split secondary forest into secondary forest and forestry
   # based on forestArea information (area sizes kept as reported by luh)
   lu <- .luIni(luh, forestArea)
