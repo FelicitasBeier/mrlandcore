@@ -24,7 +24,7 @@ correctLPJmL <- function(x, subtype) {
                    falseStatus = "warn")
     # Correct negative values (set to zero) -- skip the full-object pass
     # entirely when the check above already confirmed nothing to replace
-    if (min(x) < 0) {
+    if (min(x, na.rm = TRUE) < 0) {
       x <- madrat::toolConditionalReplace(x, conditions = "<0", replaceby = 0)
     }
   }
