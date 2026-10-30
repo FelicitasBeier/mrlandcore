@@ -228,7 +228,7 @@ calcCropareaLandInG <- function(sectoral = "kcr", physical = TRUE, cellular = FA
     # for multiple cropping even after correction
     toolExpectTrue(!any(violation), "All cases where multiple cropping happens according to calcCropareaLandInG are
                                      suitable for multiple cropping according to calcMulticroppingSuitability",
-                   level = 0, falseStatus = "note")
+                   falseStatus = "note")
     # Note: If this note occurs please consider updating the LandInG data using a more recent LPJmL version!
 
     # Correct remaining mismatches
