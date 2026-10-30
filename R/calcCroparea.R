@@ -132,94 +132,30 @@ calcCroparea <- function(sectoral = "kcr", physical = TRUE, fallow = FALSE,
 
       croparea    <- cropareaCalibrated
 
-  } else {
-    ##################################
-    ### Croparea on cellular level ###
-    ##################################
-
-    if (sectoral == "kcr") {
-      # LUH related data input on cell level
-      luhWeights   <- calcOutput("LUH2MAgPIE", share = "MAGofLUH",
-                                 missing = "fill", rice = "non_flooded", aggregate = FALSE)
-
-      luhCroptypes <- c("c3ann", "c4ann", "c3per", "c4per", "c3nfx")
-
-      luhCroparea  <- calcOutput("LUH3", landuseTypes = "LUH3", aggregate = FALSE,
-                                 irrigation = irrigation, cellular = TRUE)[, , luhCroptypes]
-
-      commonYears  <- intersect(getYears(luhWeights), getYears(luhCroparea))
-      luhWeights   <- luhWeights[, commonYears, ]
-      luhCroparea  <- luhCroparea[, commonYears, ]
-
-      commonCountries <- intersect(getItems(luhWeights, dim = "ISO"), getItems(luhCroparea, dim = "iso"))
-
-      # corrected rice area (in Mha)
-      ricearea <- calcOutput("Ricearea", cellular = TRUE,
-                             share = FALSE, aggregate = FALSE)
-
-      commonYears  <- intersect(getYears(ricearea), getYears(luhCroparea))
-      luhWeights   <- luhWeights[, commonYears, ]
-      luhCroparea  <- luhCroparea[, commonYears, ]
-      ricearea     <- ricearea[, commonYears, ]
-
-      # irrigation
-      if (irrigation == TRUE) {
-        # for check
-        luhCropareaTotal <- dimSums(luhCroparea, dim = 3)
-
-        # calculate irrigation share for rice area correction
-        irrigShr <- new.magpie(cells_and_regions = getCells(luhCroparea),
-                               years = getYears(luhCroparea),
-                               names = getNames(luhCroparea), fill = NA)
-        luhCroparea <- add_columns(luhCroparea, addnm = "total", dim = 3.2, fill = NA)
-        luhCroparea[, , "total"] <-  dimSums(luhCroparea[, , c("rainfed", "irrigated")], dim = 3.2)
-
-        irrigShr[, , "irrigated"] <- collapseNames(ifelse(luhCroparea[, , "total"] > 0,
-                                                          luhCroparea[, , "irrigated"] / luhCroparea[, , "total"], 0))
-        irrigShr[, , "rainfed"]   <- 1 - collapseNames(irrigShr[, , "irrigated"])
-
-        # flooded rice areas
-        floodedRice <- collapseNames(ricearea[, , "flooded"] * irrigShr[, , "c3ann"])
-
-        luhCroparea <- luhCroparea[, , "total", invert = TRUE]
-
-      } else {
-        # for check
-        luhCropareaTotal <- dimSums(luhCroparea, dim = 3)
-
-        # flooded rice areas
-        floodedRice <- collapseNames(ricearea[, , "flooded"])
-
+    } else {
+      # To speed up, aggregation is done with recursively
+      croparea <- calcOutput("Croparea", aggregate = FALSE, sectoral = sectoral,
+                             physical = physical, fallow = TRUE,
+                             cellular = TRUE, irrigation = TRUE,
+                             datasource = "LandInG")
+      # Aggregation to iso-level and wrt irrigation
+      if (!cellular) {
+        # aggregate to countries
+        croparea <- dimSums(croparea, dim = c("x", "y"))
+        # fill missing countries with 0
+        croparea <- toolConditionalReplace(x = toolCountryFill(croparea),
+                                           conditions = "is.na()", replaceby = 0)
       }
-
-      # temporarily exclude flooded rice for distribution of other crops and aerobic rice areas
-      luhCroparea[, , "c3ann"] <- luhCroparea[, , "c3ann"] - floodedRice
-
-      # correction of LUH cropareas with FAO country shares
-      luh2mag          <- luhCroparea * luhWeights[commonCountries, , ]
-      magCroparea      <- dimSums(luh2mag, dim = 3.1)
-
-      # total rice area correction
-      magCroparea[, , "rice_pro"] <- magCroparea[, , "rice_pro"] + floodedRice
-
-      # check sums
-      if (any(round(abs(dimSums(magCroparea, dim = 3) - luhCropareaTotal), digits = 6) > 1e-6)) {
-        stop("Sums after rice correction in calcCroparea don't match!")
+      if (!irrigation) {
+        # aggregate irrigation dimension
+        croparea <- dimSums(croparea, dim = "irrigation")
       }
+    }
 
-      data <- collapseNames(magCroparea)
-
-    } else if (sectoral == "lpj") {
-
-      magCroparea   <- calcOutput("Croparea", sectoral = "kcr", physical = physical,
-                                  cellular = TRUE, irrigation = irrigation, aggregate = FALSE)
-      mag2lpj       <- toolGetMapping(type = "sectoral", name = "MAgPIE_LPJmL.csv",
-                                     where = "mrlandcore")
-      mag2lpj       <- mag2lpj[!(mag2lpj$MAgPIE == "pasture"), ]
-      lpjCroparea   <- toolAggregate(magCroparea, rel = mag2lpj, dim = "MAG",
-                                     from = "MAgPIE", to = "LPJmL5")
-      data          <- lpjCroparea
-
+    # return croparea (and optionally fallow land)
+    if (!fallow) {
+      croparea <- croparea[, , "fallow", invert = TRUE]
+      description <- paste0(description, " excluding fallow land.")
     } else {
       description <- paste0(description, " including fallow land.")
     }
