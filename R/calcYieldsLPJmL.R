@@ -70,13 +70,28 @@ calcYieldsLPJmL <- function(lpjml = "lpjml5.10.0-m4",
                                  aggregate = FALSE)
 
     if (crop == "grassland") {
+
+      # For grassland yields, we use grass GPP and apply a factor of 0.23
+      # to obtain grazable biomass.
+      # The ratio of 0.23 to derive grazable biomass from grassland gross primary
+      # production (GPP) comes from global LPJmL simulations of managed grassland.
+      # Grassland GPP was taken from a run without grazing (0 LSU/ha) and averaged
+      # over 1971–2016. For each grid cell, the maximum grazing offtake (the carbon
+      # taken up by livestock, uptakec_mgrass) was taken across the simulated stocking
+      # densities and divided by that GPP. This gives the largest share of GPP that
+      # grazing can remove. Cells where the maximum fell at the lowest or highest
+      # stocking density tested were excluded, because the true maximum may lie outside
+      # the simulated range. For the remaining cells the mean ratio is 0.227, and
+      # the ratio of summed offtake to summed GPP is 0.228. Across all cells the
+      # mean is 0.236 and the median is 0.234. The value of 0.23 is the rounded result,
+      # and MAgPIE applies it uniformly to all grassland.
       t <- dimSums(calcOutput("LPJmLHarmonize",
                               subtype = "grass:gpp",
                               lpjmlversion = lpjml,
                               climatetype = climatetype,
                               years = selectyears, monthly = FALSE,
                               aggregate = FALSE),
-                   dim = 3) * 0.23 # HACKATHON: Document magical number from Jens
+                   dim = 3) * 0.23
       t <- add_dimension(t, dim = 3.1, add = "irrigation", nm = "rainfed")
       t <- add_dimension(t, dim = 3.2, add = "crop",       nm = "grassland")
       rfYlds[[crop]] <- t
